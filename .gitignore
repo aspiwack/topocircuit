@@ -1,0 +1,8 @@
+#emacs
+*~
+
+#ocamlbuild
+_build
+
+#misc
+melt.log

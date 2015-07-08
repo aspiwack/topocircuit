@@ -1,0 +1,8 @@
+true:use_menhir
+<util> or <util/mathmode>: include
+
+<**/*.ml> or <**/*.mli> or <**/*.mly> : use_unix , use_str , package(dynlink,melt.latex,melt,ulex,menhirLib)
+<**/*.native> or <**/*.byte>: package(dynlink,melt.latex,melt,ulex,menhirLib)
+
+<**/*.mly> : use_mlpost, use_melt
+<util/mathmode/mathLexer.ml>: package(ulex), syntax(camlp4o,ulex)

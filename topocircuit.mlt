@@ -1,0 +1,73 @@
+open Prelude
+
+
+##verbatim '%' = MathPlugin.mathmode
+
+
+let intro = "
+<%f x = x^1_2%>
+
+<%forall (x:A) (g:A->A), x LEQ g a%>
+
+{displaymath"<%Inter (x:A) (y:B), x * y%>"}
+"
+
+
+
+let packages = [
+  "inputenc" , "utf8" ;
+  "fontenc" , "T1" ;
+  "textcomp", "";
+  "microtype" , "" ;
+]
+
+let prelude = concat_with_sep [
+  (* Mis ici pour rester le plus "en dernier" possible. Plus d'options à mettre
+     à l'avenir, en particulier pour configurer le style des liens*)
+  command \"usepackage\" [T,"hyperref"] T ;
+  input "style.tex";
+] par
+
+let title = "Circuits via topoi"
+let author = "Arnaud Spiwack"
+
+let titling = concat [
+  command \"title\" [T,title] T;
+  command \"author\" [T,author] T;
+  maketitle;
+]
+
+let doc = concat [
+  titling;
+  intro;
+]
+
+let file = \"topocircuit.tex\"
+
+let options =
+  [ "a4paper" ;
+    "article" ;
+  ]
+
+let _ =
+  try
+    emit ~file (document ~options
+                         ~prelude
+                         ~packages
+                         doc)
+  with e -> Printexc.print_backtrace stdout; raise e
+
+  (* arnaud: rafiner les modes plus tard *)
+let _ =
+  Mlpost.Defaults.set_prelude
+      \"axhurkens.tex\"
+
+let _ =
+  Mlpost.Defaults.set_required_files [
+    \"style.tex\"
+  ]
+
+let _ = match Arg.mode with
+	 | `Cairo -> Mlpost.Cairost.dump_pdf ()
+	 | `Mps -> Mlpost.Mps.dump ()
+	 | _ -> assert false

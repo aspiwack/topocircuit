@@ -1,0 +1,27 @@
+% J'utilise un fichier .tex pour régler le style de la classe memoir
+% parce que ça semble la meilleure façon.
+
+
+%%% heading for @ purposes
+\makeatletter
+
+%%% Numérotation
+
+\setsecnumdepth{subsection}
+\maxsecnumdepth{subsection}
+
+%%% Configuration du & pour qu'il soit en italique
+
+\let\oldampersand\&
+\renewcommand*\&{{\itshape\oldampersand}}
+
+%%% Configuration de la police : Palatino + Text Numerals
+% quelque soit le choix de police, pour une meilleur lecture
+% à l'écran, \usagepackage{fontenc}[T1] est recommandé
+\renewcommand{\rmdefault}{pplj}
+\let\cmoldstylenums\oldstylenums %text numerals in Computer Modern
+\renewcommand{\oldstylenums}[1]{%
+  {\fontfamily{pplj}\selectfont #1}}
+
+%%% Footer for @ purposes
+\makeatother
