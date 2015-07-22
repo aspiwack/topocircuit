@@ -2,14 +2,28 @@ open Prelude
 
 
 ##verbatim '%' = MathPlugin.mathmode
+(* arnaud: bind '#' on a Faust mode, at least an sf verbatim mode. *)
 
+let abstract = "Leveraging topos theory a semantics can be given to sequential circuits where time-sensitive gates, such as unit delay, are treated uniformly with combinational gates. Both kinds of gates are functions in a particular topos: the topos of presheaves over the natural ordering of <%bbN%>. This is used to show that sequential circuits validate the equational theory of traced categories."
+
+let abstract =
+  environment \"abstract\" (T,abstract) T
 
 let intro = "
-<%f x = x^1_2%>
+When giving semantics to circuits (typically boolean circuits), it is customary to treat the combinational~--~{foreign"i.e."} time-independent~--~parts of the circuits differently from time sensitive ones. Since it is usually assumed that the only time-sensitive gate is the unit delay, each outgoing wire from a delay is considered an additional input, and each incoming wire an additional output. Some care is taken to feed the right output into the right input at next iteration, and so time-sensitivity is eliminated and one can reason on a purely combinational circuit.
 
-<%forall (x:A) (g:A->A), x LEQ g a%>
+This is not very convenient to reason equationally about moving unit delays for better placement. But this approach really breaks down when considering time-sensitive gates which are not simple unit delay. This article takes its root in the study of compilation of the circuit programming language Faust~{cite"Orlarey2004"}. Faust features a somewhat unusual kind of delay gate, written <#s@d#>, where <#s#> is an arbitrary signal, and <#d#> is a {emph"time-varying"} bounded natural number signal whose value at time <%t%> determines how far in the past of <#s#> to fetch the value of the delayed signal.
 
-{displaymath"<%Inter (x:A) (y:B), x * y%>"}
+With such a construct, it becomes impossible to ``cut'' a circuit into a combinational circuit. At least not without heavy modifications (the constrain that <#d#> is bounded is imposed in order to be able to compile the program in constant memory, so such a circuit can be reduced to use only unit delays).
+
+To address this issue, let us turn to presheaves and topos theory. The critical property which we shall use is that topoi are models of constructive mathematics. Therefore we shall first develop a theory of combinational circuits in ordinary constructive mathematics, then lift it to sequential circuits {foreign"via"} a presheaf construction.
+
+Much work has been put(*citations*), recently, in using category theory to explain and exploit the linear algebraic aspects of circuits from control-theory. This article explores an orthogonal axis of the design space. Both can, and should, in principle be combined to obtain linear algebra with time. It is what signal processing is made of.
+
+Before we move on, I have to start with an apology: despite the subject of topoi and presheaves being rather technical, I will be assuming quite a bit of familiarity with them in this article. I realise that this will make this article unnecessarily arduous for many. But in order for this article to be written at all, I felt I had to limit its scope thus.
+
+{paragraph"Acknowledgement"}
+I was once sitting with Noam Zeilberger listening to a seminar by Gérard Berry. About circuits. Berry's presentation was obviously of great interest to the both of us as we went on discussing its content for quite a while after that. At some point Zeilberger remarked: ``I don't really know what a circuit {emph"is"}'', and I suddenly realised that I didn't quite either; despite the intuitive, and occasionally concrete, content of circuits. If Zeilberger's remark gave you pause, as it did to me, then read on for my attempt at a definition.
 "
 
 
@@ -26,6 +40,7 @@ let prelude = concat_with_sep [
      à l'avenir, en particulier pour configurer le style des liens*)
   command \"usepackage\" [T,"hyperref"] T ;
   input "style.tex";
+  command \"bibliographystyle\" [T,"plain"] T;
 ] par
 
 let title = "Circuits via topoi"
@@ -39,7 +54,9 @@ let titling = concat [
 
 let doc = concat [
   titling;
+  abstract;
   intro;
+  command \"bibliography\" [A,"library"] A;
 ]
 
 let file = \"topocircuit.tex\"

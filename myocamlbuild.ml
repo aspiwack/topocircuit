@@ -21,7 +21,7 @@ let plugins = []
 let meltdep = []
 
 (*** List of extra dependencies on the .tex file compilation ***)
-let texdeps = [(* "library.bib"; *)"style.tex";]
+let texdeps = ["library.bib";"style.tex";]
 
 (*** Global constants ***)
 
