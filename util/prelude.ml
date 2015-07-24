@@ -430,6 +430,65 @@ let atuple l =
 let btuple l =
   mode M (concat [text"[" ; concat_with_sep l (text ","); text "]"])
 
+(*** Bindings to theorem environment ***)
+
+
+let newtheorem cmd name =
+    command "newtheorem" [(T,cmd);(T,name)] T
+
+let theorems = variable []
+
+(* arnaud: le problème ici c'est que "name" est un Latex.t, donc peut contenir des fonctions. C'est assez dangereux. *)
+let declare_theorems =
+  final theorems begin fun l ->
+    concat (List.map (fun (c,n) -> newtheorem (text c) n) l)
+  end
+
+let require_theorem =
+  let gensym = variable 0 in
+  fun x k ->
+    setf gensym ((+)1) ^^
+    get gensym begin fun g -> 
+      let name = "thm__"^string_of_int g in
+      setf theorems (fun l -> (name,x)::l)^^
+      k name
+    end
+
+let theorem_env name ?label ?caption body =
+  let label_and x =
+    match label with
+    | None -> x
+    | Some l -> place_label l ^^ x
+  in
+  let opt = Option.map (fun x -> T,x) caption in
+  environment name ?opt (T,label_and body) T
+
+let make_theorem name =
+  let exists = variable None in
+  fun ?label ?caption t ->
+    get exists begin function
+      | None ->
+          require_theorem name (fun cmd -> set exists (Some cmd) ^^ theorem_env cmd ?label ?caption t)
+      | Some cmd -> theorem_env cmd ?label ?caption t
+    end
+
+let proof_env t =
+  environment "proof" ~packages:["amsthm",""] (T,t) T
+
+let theorem_bare = make_theorem (text"Theorem")
+let theorem ?label ?name ?proof statement =
+  concat [
+    theorem_bare ?label ?caption:name statement;
+    begin match proof with
+    | None -> empty
+    | Some p -> proof_env p
+    end
+  ]
+
+let definition_bare = make_theorem (text"Definition")
+let definition ?label ?name def =
+  definition_bare ?label ?caption:name def
+
 (*** Labels ***)
 
 (**** Bibliography ****)

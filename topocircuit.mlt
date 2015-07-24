@@ -1,9 +1,16 @@
 open Prelude
 
+let citation_needed = small"[?]"
+let ref_needed = small"[?]"
 
 ##verbatim '%' = MathPlugin.mathmode
 (* arnaud: bind '#' on a Faust mode, at least an sf verbatim mode. *)
 
+(*** Holes ***)
+
+let d_bhdomain = label ()
+
+(*** Document ***)
 let abstract = "Leveraging topos theory a semantics can be given to sequential circuits where time-sensitive gates, such as unit delay, are treated uniformly with combinational gates. Both kinds of gates are functions in a particular topos: the topos of presheaves over the natural ordering of <%bbN%>. This is used to show that sequential circuits validate the equational theory of traced categories."
 
 let abstract =
@@ -26,6 +33,35 @@ Before we move on, I have to start with an apology: despite the subject of topoi
 I was once sitting with Noam Zeilberger listening to a seminar by Gérard Berry. About circuits. Berry's presentation was obviously of great interest to the both of us as we went on discussing its content for quite a while after that. At some point Zeilberger remarked: ``I don't really know what a circuit {emph"is"}'', and I suddenly realised that I didn't quite either; despite the intuitive, and occasionally concrete, content of circuits. If Zeilberger's remark gave you pause, as it did to me, then read on for my attempt at a definition.
 "
 
+let combinational = "{chapter"Combinational circuits"}
+
+It is direct to give a definition of combinational circuits if they are not allowed to have loops: just interpret each gate as a function a compose things appropriately. Or, more generally, if you are so disposed, interpret each gate as an arrow in some cartesian category, and interpret appropriately.
+
+The case that drove my interest, however, requires loops~--~aka feedback. Not that I'm particularly in need of delay-free loops, although this is of legitimate interest (see for instance~{citation_needed}), but the semantics which is developed in this section will be lifted in Section~{ref_needed} to sequential circuits, which are useless without feedbacks (even though we may very well require that these feedbacks all go through a delay).
+
+{section"Constructive domain semantics"}
+
+As good computer scientist ought to when faced with tricky fixed point (even in circuits, loops are, after all, fixed points), let us turn to domains. Before we give a formal description of our semantics, let me note that it is a simple semantics of the rather venerable {emph"three-valued semantics"} of combinational boolean circuits~{citation_needed}, which, by the way, has been shown, with {foreign"caveats"}, to be a good semantics for electronic circuits~{citation_needed}.
+
+Boolean circuits have, of course, a special relevance in computing science due to their being the basic building block of computers. But we will not restrict ourselves so. Wires will be allowed to carry values of any type we wish. The Faust programming language, for instance, has wires of type <%bbN%> and <%bbR%> (floating point numbers, in practice). The types, which, for the purpose of this article, are simply sets of permitted values, allowed for the wires by a circuit language will be called {emph"base types"}.
+
+{definition ~label:d_bhdomain ~name:"Bounded height domain"
+    "A bounded height domain is a partially ordered set <%D%> equipped with a number <%b%> such that every increasing chain <%x_1 LEQ %{ldots}% LEQ x_n%> in <%D%> with <%n GT b%> has a pair <%x_i GEQ x_j%> with <%i LT j%> (equivalently, for every <%k GT i%>, <%x_i = x_k%>)."}
+
+Circuits will be given a semantics as increasing functions between such domains. To the extent that the material present in this section is different from the usual treatment it is to render this section constructive to be compatible with the topos of Section~{ref_needed}. This is the reason why we focus on bounded height domains rather than the more usual <%omega%>-{textsc"cpo"}s. Note also that <%b%>, in Definition~{ref_ d_bhdomain} is {emph"not"} the height of the domain but rather an upper bound on this height. The reason is that, constructively, there may not be an exact height (see also~{cite"CoquandSpiwack2010"} for more thoughts on finiteness in constructive mathematics). Every proof, in this section, is constructive.
+
+Bounded height domain have the fixed-point property, just like other kinds of domains. Note that the fixed-point property of {textsc"cpo"}s or <%omega%>-{textsc"cpo"}s are also constructive. The added value of bounded height domains is that there are really few constructive {textsc"cpo"}s or <%omega%>-{textsc"cpo"}s (see Remark~{ref_needed} below).
+
+{theorem ~name:"Fixed-point property"
+    "Every increasing function <%f:D->D%> for a bounded height domain <%D%> with a smallest element <%Bot%> has a smallest fixed-point."
+      ~proof:"Let <%b%> be a bound on the height of <%D%>. The sequence <%Bot LEQ f Bot LEQ f^2 Bot LEQ %{ldots}% LEQ f^b Bot%> has length <%b+1%>. By definition, there is an <%i LT b%> such that <%f^i Bot = f^\(i+1\) Bot%> hence <%f^b Bot = f^i Bot%> is a fixed point.
+
+It is the smallest since, by induction, for any fixed point <%x_0%> of <%f%> and every <%k%>, <%f^k Bot LEQ x_0%>.  "}
+
+Base types, which are sets, can be naturally identified to bounded height domains (without a smallest element).
+
+
+"
 
 
 let packages = [
@@ -41,6 +77,7 @@ let prelude = concat_with_sep [
   command \"usepackage\" [T,"hyperref"] T ;
   input "style.tex";
   command \"bibliographystyle\" [T,"plain"] T;
+  declare_theorems;
 ] par
 
 let title = "Circuits via topoi"
@@ -56,6 +93,7 @@ let doc = concat [
   titling;
   abstract;
   intro;
+  combinational;
   command \"bibliography\" [A,"library"] A;
 ]
 

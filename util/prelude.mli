@@ -82,6 +82,12 @@ val comprehension : pattern list -> Latex.t -> Latex.t
 
 val powerset : Latex.t -> Latex.t
 
+(*** Definitions/theorems ***)
+
+
+val declare_theorems : Latex.t
+val theorem : ?label:Latex.label -> ?name:Latex.t -> ?proof:Latex.t -> Latex.t -> Latex.t
+val definition : ?label:Latex.label -> ?name:Latex.t -> Latex.t -> Latex.t
 
 (*** An draft of module for the [memoir] document class ***)
 

@@ -67,6 +67,8 @@ let map_ident = [
   "Phi", SYMB phi_;
   "Xi" , SYMB xi_;
   "Psi" , SYMB psi_;
+  "omega" , SYMB omega ;
+  "Omega" , SYMB omega_;
 ]
 
 let regexp whitespace = [ ' '  '\t' '\n' '\r' ]
