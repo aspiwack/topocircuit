@@ -109,9 +109,11 @@ What is left is to use the fixed-point property to make precise the definition o
 Traced categories~{citation_needed} provide a graphical language which is essentially the same as circuits with feedback. It is reassuring that circuits can be interpreted as arrows in such a traced category. It provides a natural equational theory on circuits which can be, among other things, leveraged to produce compilation schemes~{citation_needed}.
 
 {lemma ~name:"Local fixed-point property"
-    "Theorem~{ref_ t_bhfixpoint} can be extended to produce a local fixed point function: let <%f:A*X->X%> an increasing function (<%A%> and <%X%> bounded height domain with a smallest element), there is a function <%mu f:A->X%>, such that for any <%a:A%>, <%\(mu f\) a%> is the least fixed point of the increasing function <%lambda x, f a x%>."
-      ~proof:"The proof is the same as Theorem {ref_ t_bhfixpoint}, taking into account that, by definition of cartesian product <%lambda x, f a x%> is, indeed, increasing: let <%b%> a bound on the height of X,
-  <%\(mu f\) a = (lambda x, f a x)^b Bot%>"}
+    "Theorem~{ref_ t_bhfixpoint} can be extended to produce a local fixed point function: let <%f:A*X->X%> an increasing function (<%A%> and <%X%> bounded height domain with a smallest element), there is an increasing function <%mu f:A->X%>, such that for any <%a:A%>, <%\(mu f\) a%> is the least fixed point of the increasing function <%lambda x, f a x%>."
+      ~proof:"The proof bulk of the proof is the same as Theorem {ref_ t_bhfixpoint}, taking into account that, by definition of cartesian product <%lambda x, f a x%> is, indeed, increasing: let <%b%> a bound on the height of X,
+  <%\(mu f\) a = (lambda x, f a x)^b Bot%>.
+
+We need to check the <%mu f%> is indeed increasing. But since <%f%> is increasing, for any <%a LEQ a'%> and any <%x LEQ x'%>  <%f a x LEQ f a' x'%>; by induction, we conclude that <%\(mu f\) a LEQ \(mu f\) a'%>."}
 
 Hasegawa tells us that there are three properties to verify for a fixed point operator to yield a trace (note that, reciprocally, all traces in a cartesian category yield such a fixed point operator). We shall write <%MU a x, f a x%> instead of <%mu\(lambda (a,x), f a x\)%>. In addition and by definition, <%(MU a x, f a x) a_0 = MU x, f a_0 x%>; since the former is cumbersome, we will use the latter as a short-hand.
 
@@ -129,8 +131,17 @@ Hasegawa tells us that there are three properties to verify for a fixed point op
 
   The two inequalities prove the lemma."}
 
-{lemma ~name:"Bekič"
-""}
+{let inner = "<%MU x, f a x \(\(mu g\) a x\)%>" in
+lemma ~name:"Bekič"
+  "Let <%f:A*X*Y->X%> and <%g:A*X*Y->Y%>. Taking <%h:A->X%> to be <%h a = %{inner}%%>, the following holds <%MU a (x,y), (f a x y, g a x y) = lambda a, (h a , \(mu g\) a \(h a\))%>"
+    ~proof:"For <%a:A%>, let us prove that <%(h a , \(mu g\) a \(h a\))%> is a fixed point of <%lambda (x,y), (f a x y, g a x y)%>.
+  {displaymath @@ array [`L;`L;`L] [
+    array_line [empty;"<%(f a \(h a\) \(\(mu g\) a \(h a\)\), g a \(h a\) \(\(mu g\) a \(h a\)\))%>"; empty];
+    array_line [$=$;"<%(f a \(h a\) \(\(mu g\) a \(h a\)\), \(mu g\) a \(h a\))%>"; "(definition of <%mu g%>)"];
+    array_line [$=$;"<%(h a, \(mu g\) a \(h a\))%>"; "(definition of <%h%>)"];
+  ]}
+
+We also have that <%MU (x,y), (f a x y, g a x y) = (f a \(MU a (x,y), (f a x y, g a x y)\) , g a \(MU a (x,y), (f a x y, g a x y)\) )%>. This allows us to test both components for being fixed points or the corresponding function, which will suffice to conclude."}
 "
 
 
