@@ -59,6 +59,7 @@ let map_ident = [
   "iota" , SYMB iota ;
   "kappa" , SYMB kappa ;
   "lam" , SYMB lambda ;
+  "mu" , SYMB mu ;
   "Pi" , SYMB pi_;
   "pi" , SYMB pi ;
   "Sigma" , SYMB sigma_;
@@ -151,7 +152,7 @@ let next k = lexer
 
   | "\\_" -> WILDCARD
 
-  | "=" -> EQUAL
+  | "=" -> EQUAL | "<>" -> NEQUAL
 
   | whitespace -> k ()
   | number -> number (lexeme lexbuf)

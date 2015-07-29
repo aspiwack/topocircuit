@@ -1,14 +1,18 @@
 open Prelude
 
-let citation_needed = small"[?]"
-let ref_needed = small"[?]"
-
 ##verbatim '%' = MathPlugin.mathmode
 (* arnaud: bind '#' on a Faust mode, at least an sf verbatim mode. *)
 
 (*** Holes ***)
 
+let citation_needed = small"[?]"
+let ref_needed = small"[?]"
+let diagram_needed = small"[diagram]"
+
+(*** labels ***)
+
 let d_bhdomain = label ()
+let t_bhfixpoint = label ()
 
 (*** Document ***)
 let abstract = "Leveraging topos theory a semantics can be given to sequential circuits where time-sensitive gates, such as unit delay, are treated uniformly with combinational gates. Both kinds of gates are functions in a particular topos: the topos of presheaves over the natural ordering of <%bbN%>. This is used to show that sequential circuits validate the equational theory of traced categories."
@@ -46,13 +50,13 @@ As good computer scientist ought to when faced with tricky fixed point (even in 
 Boolean circuits have, of course, a special relevance in computing science due to their being the basic building block of computers. But we will not restrict ourselves so. Wires will be allowed to carry values of any type we wish. The Faust programming language, for instance, has wires of type <%bbN%> and <%bbR%> (floating point numbers, in practice). The types, which, for the purpose of this article, are simply sets of permitted values, allowed for the wires by a circuit language will be called {emph"base types"}.
 
 {definition ~label:d_bhdomain ~name:"Bounded height domain"
-    "A bounded height domain is a partially ordered set <%D%> equipped with a number <%b%> such that every increasing chain <%x_1 LEQ %{ldots}% LEQ x_n%> in <%D%> with <%n GT b%> has a pair <%x_i GEQ x_j%> with <%i LT j%> (equivalently, for every <%k GT i%>, <%x_i = x_k%>)."}
+    "A bounded height domain is a partially ordered set <%D%> equipped with a number <%b%> such that every increasing chain <%x_1 LEQ %{ldots}% LEQ x_n%> in <%D%> with <%n GT b%> has a pair <%x_i GEQ x_j%> with <%i LT j%> (equivalently, for every <%i LEQ k LEQ j%>, <%x_i = x_k%>)."}
 
 Circuits will be given a semantics as increasing functions between such domains. To the extent that the material present in this section is different from the usual treatment it is to render this section constructive to be compatible with the topos of Section~{ref_needed}. This is the reason why we focus on bounded height domains rather than the more usual <%omega%>-{textsc"cpo"}s. Note also that <%b%>, in Definition~{ref_ d_bhdomain} is {emph"not"} the height of the domain but rather an upper bound on this height. The reason is that, constructively, there may not be an exact height (see also~{cite"CoquandSpiwack2010"} for more thoughts on finiteness in constructive mathematics). Every proof, in this section, is constructive.
 
 Bounded height domain have the fixed-point property, just like other kinds of domains. Note that the fixed-point property of {textsc"cpo"}s or <%omega%>-{textsc"cpo"}s are also constructive. The added value of bounded height domains is that there are really few constructive {textsc"cpo"}s or <%omega%>-{textsc"cpo"}s (see Remark~{ref_needed} below).
 
-{theorem ~name:"Fixed-point property"
+{theorem ~name:"Fixed-point property" ~label:t_bhfixpoint
     "Every increasing function <%f:D->D%> for a bounded height domain <%D%> with a smallest element <%Bot%> has a smallest fixed-point."
       ~proof:"Let <%b%> be a bound on the height of <%D%>. The sequence <%Bot LEQ f Bot LEQ f^2 Bot LEQ %{ldots}% LEQ f^b Bot%> has length <%b+1%>. By definition, there is an <%i LT b%> such that <%f^i Bot = f^\(i+1\) Bot%> hence <%f^b Bot = f^i Bot%> is a fixed point.
 
@@ -60,7 +64,73 @@ It is the smallest since, by induction, for any fixed point <%x_0%> of <%f%> and
 
 Base types, which are sets, can be naturally identified to bounded height domains (without a smallest element).
 
+{definition ~name:"Flat domains"
+    "Given a set <%A%>, the partially ordered set (also noted <%A%>) where <%x LEQ y <=> x=y%> is a domain of height bounded by <%1%>, which we call a flat domain."}
 
+Continuing on the subject of constructiveness, notice that flat domains are an example of domain which can't be assigned a height. Indeed, if <%A%> is inhabited then <%A%> has height <%1%>, whereas when <%A%> is empty then <%A%> has height <%0%> but it is not possible, in constructive mathematics to decide whether <%A%> is empty or not, the height flat domains is, therefore, not well defined (it is, in fact, impossible to define a non-constant integer-valued function on sets~{cite"Escardo2013"}).
+
+In order to use base types in conjunction with the fixed point property they need a smallest element which we add freely.
+
+{definition ~name:"Lifted domains"
+    "Given a domain <%A%> with a bound <%b%> on its height, we construct a domain <%A_Bot%>, called {emph"lifted"}, by adding a distinguished element <%Bot%> to <%A%> and considering it smaller than every element of <%A%>: <%forall x:A, Bot LT x%>. The height of <%A_Bot%> is bounded by <%b+1%>"}
+
+(* arnaud: if I want to make an additional remark here, lifted flat domains are an example of bounded height domains which are not omega-cpo-s. *)
+
+Wires in circuits will be interpreted as taking value in the lifted flat domains corresponding to base types. Increasing functions between lifted flat domain are such that if <%f Bot <> Bot%>, then for any <%a%>, <%f a = f Bot%>. In particular, if <%f%> is such a function with several fixed points, then <%f Bot = Bot%> and the smallest fixed point is <%Bot%>. So <%Bot%> represents both the absence of a well-defined fixed point and the presence of several fixed points.
+
+Obviously, in order for the smallest fixed point of<%f%> to be non-<%Bot%>, <%f%> needs to ignore some of its input wires, for instance <%f%> could be the well-know parallel or:
+
+{array [`C;`Vert;`C;`C;`C] [
+  array_line ["<%por%>";"<%Bot%>";"<%0%>";"<%1%>"];
+  midrule;
+  array_line ["<%Bot%>" ; "<%Bot%>";"<%Bot%>";"<%1%>"];
+  array_line ["<%0%>" ; "<%Bot%>";"<%0%>";"<%1%>"];
+  array_line ["<%1%>" ; "<%1%>";"<%1%>";"<%1%>"];
+]}
+
+When one of the input of the parallel or is <%1%>, then the output is <%1%>, whatever the behaviour of the other input. In particular the following circuit is well defined (it outputs <%1%>):
+
+{diagram_needed}
+
+To formalise circuits with multiple wires we remark that bounded height domains are closed by cartesian products.
+
+{lemma ~name:"Cartesian product of domains"
+    "The product <%A*B%> of two bounded height domains of respective bound <%b_A%> and <%b_B%>, with order <%(x_1,y_1) LEQ (x_2,y_2) <=> x_1 LEQ x_2 /\ y_1 LEQ y_2%> , is a domain whose height is bounded by <%b_A*b_B%>."
+      ~proof:"A chain in <%A*B%> is simply a list in of pairs <%(x,y)%>, with an constraint on consecutive pairs. However, chains can be represented differently as a list of pairs <%(x,l)%> with <%l%> a chain in <%B%>, with the intent that the pair <%(x,[y_1,%{ldots}%,y_n])%> represents the chain <%(x,y_1) LEQ %{ldots}% LEQ (x,y_n)%>. So that chains now have multiple representations depending on how successive pairs with the same first component are ``contracted''.
+
+  We begin with the simplest representation where every pair <%(x,l)%> is an <%(x,[y])%>. Now, as long as our list is of size longer than <%b_A%> (without loss of generality we can suppose both <%b_A%> and <%b_B%> to be non-zero) we can use the fact that the first components describe a chain to find consecutive positions with the same <%x%> which we can contract. Hence strictly reducing the size of our list. This process gives us a contracted representation of the long chain of length <%b_A%> or less. But, since the total length of the chain is larger than <%b_A*b_B%>, there must be at least one second-component list with length larger than <%b_B%>. Applying the definition of the bound <%b_B%> to this list concludes the proof."}
+
+Combinational gates are, therefore, interpreted as increasing functions of type <%A_1_Bot*%{ldots}%*A_n_Bot -> A_\(n+1\)_Bot*%{ldots}%*A_p_Bot%> (with each <%A_i%> being a base type). We call a gate <%g%> {emph"strict"} if it for any <%(x_1,%{ldots}%,x_n)%> where at least one of the <%x_i%> is <%Bot%> then <%g x_1%{ldots}% x_n = (y_1,%{ldots}%,y_p)%> where at least one of the <%y_i%> is <%Bot%>.
+
+{section"Traced category"}
+
+What is left is to use the fixed-point property to make precise the definition of feedback wires, the solution is given by Hasegawa~{cite"Hasegawa1997"~extra:"Theorem 3.1"} who gives a method to transform fixed-point operators into traces.
+
+Traced categories~{citation_needed} provide a graphical language which is essentially the same as circuits with feedback. It is reassuring that circuits can be interpreted as arrows in such a traced category. It provides a natural equational theory on circuits which can be, among other things, leveraged to produce compilation schemes~{citation_needed}.
+
+{lemma ~name:"Local fixed-point property"
+    "Theorem~{ref_ t_bhfixpoint} can be extended to produce a local fixed point function: let <%f:A*X->X%> an increasing function (<%A%> and <%X%> bounded height domain with a smallest element), there is a function <%mu f:A->X%>, such that for any <%a:A%>, <%\(mu f\) a%> is the least fixed point of the increasing function <%lambda x, f a x%>."
+      ~proof:"The proof is the same as Theorem {ref_ t_bhfixpoint}, taking into account that, by definition of cartesian product <%lambda x, f a x%> is, indeed, increasing: let <%b%> a bound on the height of X,
+  <%\(mu f\) a = (lambda x, f a x)^b Bot%>"}
+
+Hasegawa tells us that there are three properties to verify for a fixed point operator to yield a trace (note that, reciprocally, all traces in a cartesian category yield such a fixed point operator).
+
+{lemma ~name:"Naturality in <%A%>"
+  "For any <%f:A*X->X%> and <%g:B->A%>, the following holds: <%mu \(lambda (b,x), f\(g b\) x\) = \(mu f\) COMP g%>."
+  ~proof:"Let <%b:B%>, <%\(mu \(lambda (b,x), f\(g b\) x\)\) b%> is, by definition, the least fixed point of <%lambda x, f \(g b\) x%>. And, also by definition, so is <%\(mu f\) \(g b\)%>."}
+
+{lemma ~name:"Naturality in <%X%>"
+  "Let <%f%> be an increasing function in <%A*X->Y%>. For any <%g:Y->X%>, <%mu \(lambda (a,x), g \(f a x\)\) = g COMP \(mu \(lambda (a,y), f a \(g y\)\)\)%>."
+      ~proof:"Let us fix an <%a:A%>.
+  {itemize [
+    "Let us prove that <%g \( \(mu \(lambda (a,y), f a \(g y\)\)\)  a\)%> is a fixed point of <%\(lambda x, g \(f a x\)\)%>, and therefore <%\(mu \(lambda (a,x), g \(f a x\)\)\) a LEQ g \( \(mu \(lambda (a,y), f a \(g y\)\)\) \) a%>. This follows immediately from the fact that <%f a \(g \( \(mu \(lambda (a,y), f a \(g y\)\)\) \) a\) = \(\(mu \(lambda (a,y), f a \(g y\)\)\) \) a%> and the fact that <%g%> is increasing.";
+      "Conversely, we prove similarly that <%f a \(\(mu \(lambda (a,x), g \(f a x\)\)\) a\)%> is a fixed point of <%lambda y, f a \(g y\)%>. This yields <%f a \(\(mu \(lambda (a,x), g \(f a x\)\)\) a\) GEQ \(mu \(lambda (a,y), f a \(g y\)\)\) a = f a \(g \( \(mu \(lambda (a,y), f a \(g y\)\)\) a \)\)%>, and then, <%\(mu \(lambda (a,x), g \(f a x\)\)\) a GEQ g \( \(mu \(lambda (a,y), f a \(g y\)\)\) \) a%> by monotonicity of <%lambda x, f a x%>."
+  ]}
+
+  The two inequalities prove the lemma."}
+
+{lemma ~name:"Bekič"
+""}
 "
 
 

@@ -56,7 +56,7 @@ let body x = { body=x; subscript=None; superscript=None }
 %token STAR
 %token LEQ LT GEQ GT
 
-%token EQUAL
+%token EQUAL NEQUAL
 
 %token SUB SUP
 
@@ -89,10 +89,10 @@ simple_expr_body:
 | s=SYMB { s }
 | WILDCARD { text"\\_" }
 
-| l=tuple(expr) { between `Paren (concat_with_sep l (text",")) }
+| l=tuple(expr) { tuple l }
 | POINTYL e=expr  POINTYR { between `Angle e }
 
-| BRACKETL e=expr BRACKETR { between `Bracket e }
+| l=list(expr) { btuple l }
 | BBRACKETL e=expr BBRACKETR { concat[llbracket;e;rrbracket] }
 | BRACEL e=separated_nonempty_list (COMMA,expr) BRACER { between `Brace (concat_with_sep e (text",")) }
 
@@ -148,6 +148,7 @@ spine:
 | IN { in_ }
 | SUBSET { subseteq }
 | EQUAL { text"=" }
+| NEQUAL { neq }
 | SEMICOLON { text";" }
 | CUP { cup }
 | CAP { cap }
@@ -172,6 +173,9 @@ spine:
 
 %inline tuple(X):
   l=delimited(PARENL,separated_list(COMMA,X),PARENR) { l }
+
+%inline list(X):
+  l=delimited(BRACKETL,separated_list(COMMA,X),BRACKETR) { l }
 
 singletypedpattern:
 | p = pattern COLON a=expr { p , a }

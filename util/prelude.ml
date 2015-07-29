@@ -422,13 +422,13 @@ let quotient a b = (*mode M (concat [ a ; text "/" ; b ])*)
   command ~packages:["faktor",""] "faktor" [(M,a);(M,b)] M
 
 let tuple l =
-  mode M (concat [text "(" ; concat_with_sep l (text ","); text ")"])
+  mode M (between `Paren (concat_with_sep l (text ",")))
 
 let atuple l =
-  mode M (concat [langle ; concat_with_sep l (text ","); rangle])
+  mode M (between `Angle (concat_with_sep l (text ",")))
 
 let btuple l =
-  mode M (concat [text"[" ; concat_with_sep l (text ","); text "]"])
+  mode M (between `Bracket (concat_with_sep l (text ",")))
 
 (*** Bindings to theorem environment ***)
 
@@ -479,6 +479,16 @@ let theorem_bare = make_theorem (text"Theorem")
 let theorem ?label ?name ?proof statement =
   concat [
     theorem_bare ?label ?caption:name statement;
+    begin match proof with
+    | None -> empty
+    | Some p -> proof_env p
+    end
+  ]
+
+let lemma_bare = make_theorem (text"Lemma")
+let lemma ?label ?name ?proof statement =
+  concat [
+    lemma_bare ?label ?caption:name statement;
     begin match proof with
     | None -> empty
     | Some p -> proof_env p
