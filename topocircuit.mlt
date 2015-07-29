@@ -113,18 +113,18 @@ Traced categories~{citation_needed} provide a graphical language which is essent
       ~proof:"The proof is the same as Theorem {ref_ t_bhfixpoint}, taking into account that, by definition of cartesian product <%lambda x, f a x%> is, indeed, increasing: let <%b%> a bound on the height of X,
   <%\(mu f\) a = (lambda x, f a x)^b Bot%>"}
 
-Hasegawa tells us that there are three properties to verify for a fixed point operator to yield a trace (note that, reciprocally, all traces in a cartesian category yield such a fixed point operator).
+Hasegawa tells us that there are three properties to verify for a fixed point operator to yield a trace (note that, reciprocally, all traces in a cartesian category yield such a fixed point operator). We shall write <%MU a x, e%> instead of <%mu\(lambda (a,x), e\)%>.
 
 {lemma ~name:"Naturality in <%A%>"
-  "For any <%f:A*X->X%> and <%g:B->A%>, the following holds: <%mu \(lambda (b,x), f\(g b\) x\) = \(mu f\) COMP g%>."
-  ~proof:"Let <%b:B%>, <%\(mu \(lambda (b,x), f\(g b\) x\)\) b%> is, by definition, the least fixed point of <%lambda x, f \(g b\) x%>. And, also by definition, so is <%\(mu f\) \(g b\)%>."}
+  "For any <%f:A*X->X%> and <%g:B->A%>, the following holds: <%MU b x, f\(g b\) x = \(mu f\) COMP g%>."
+  ~proof:"Let <%b:B%>, <%(MU b x, f\(g b\) x) b%> is, by definition, the least fixed point of <%lambda x, f \(g b\) x%>. And, also by definition, so is <%\(mu f\) \(g b\)%>."}
 
 {lemma ~name:"Naturality in <%X%>"
-  "Let <%f%> be an increasing function in <%A*X->Y%>. For any <%g:Y->X%>, <%mu \(lambda (a,x), g \(f a x\)\) = g COMP \(mu \(lambda (a,y), f a \(g y\)\)\)%>."
+  "Let <%f%> be an increasing function in <%A*X->Y%>. For any <%g:Y->X%>, <%MU a x, g \(f a x\) = g COMP (MU a y, f a \(g y\))%>."
       ~proof:"Let us fix an <%a:A%>.
   {itemize [
-    "Let us prove that <%g \( \(mu \(lambda (a,y), f a \(g y\)\)\)  a\)%> is a fixed point of <%\(lambda x, g \(f a x\)\)%>, and therefore <%\(mu \(lambda (a,x), g \(f a x\)\)\) a LEQ g \( \(mu \(lambda (a,y), f a \(g y\)\)\) \) a%>. This follows immediately from the fact that <%f a \(g \( \(mu \(lambda (a,y), f a \(g y\)\)\) \) a\) = \(\(mu \(lambda (a,y), f a \(g y\)\)\) \) a%> and the fact that <%g%> is increasing.";
-      "Conversely, we prove similarly that <%f a \(\(mu \(lambda (a,x), g \(f a x\)\)\) a\)%> is a fixed point of <%lambda y, f a \(g y\)%>. This yields <%f a \(\(mu \(lambda (a,x), g \(f a x\)\)\) a\) GEQ \(mu \(lambda (a,y), f a \(g y\)\)\) a = f a \(g \( \(mu \(lambda (a,y), f a \(g y\)\)\) a \)\)%>, and then, <%\(mu \(lambda (a,x), g \(f a x\)\)\) a GEQ g \( \(mu \(lambda (a,y), f a \(g y\)\)\) \) a%> by monotonicity of <%lambda x, f a x%>."
+    "Let us prove that <%g \( (MU a y, f a \(g y\))  a\)%> is a fixed point of <%\(lambda x, g \(f a x\)\)%>, and therefore <%(MU a x, g \(f a x\)) a LEQ g \( (MU a y, f a \(g y\))  a\)%>. This follows immediately from the fact that <%f a \(g \( (MU a y, f a \(g y\)) a\)\) = (MU a y, f a \(g y\)) a%> and the fact that <%g%> is increasing.";
+      "Conversely, we prove similarly that <%f a \((MU a x, g \(f a x\)) a\)%> is a fixed point of <%lambda y, f a \(g y\)%>. This yields <%f a \((MU a x, g \(f a x\)) a\) GEQ (MU a y, f a \(g y\)) a = f a \(g \( (MU a y, f a \(g y\)) a \)\)%>, and then, <%(MU a x, g \(f a x\)) a GEQ g \( (MU a y, f a \(g y\)) a\)%> by monotonicity of <%lambda x, f a x%>."
   ]}
 
   The two inequalities prove the lemma."}

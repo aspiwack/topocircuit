@@ -152,18 +152,31 @@ let itemize ?spacing ?(bullet=(tiny blacksquare)) items =
 
 
 
-type pattern = Latex.t*Latex.t
+type pattern = Latex.t*(Latex.t option)
 
 let interp_pattern_autospacing (x,a) =
-  concat [ x ; in_ ; a ]
+  let in_a = Option.map (fun x -> in_^^x) a in
+  concat @@ Option.flatten [ Some x ; in_a ]
 let interp_pattern_tightspacing (x,a) =
   let space = text"\\," in
-  concat [ x ; space ; block in_ ; space ; a ]
+  let in_a =
+    Option.map
+      (fun x -> concat [ space ; block in_ ; space ; x ])
+      a
+  in
+  concat @@ Option.flatten [ Some x ; in_a ]
 let interp_pattern_sup (x,a) =
-  exponent x (in_^^a)
+  match a with
+  | None -> x
+  | Some a -> exponent x (in_^^a)
 let interp_pattern_small (x,a) =
   let space = text"\\," in
-  x ^^ scriptsize (concat [ block in_ ; space ; a ])
+  let in_a =
+    Option.map
+      (fun  x -> scriptsize (concat [ block in_ ; space ; x ]))
+      a
+  in
+  concat @@ Option.flatten [ Some x ; in_a ] 
 
 let default_interp_pattern = interp_pattern_autospacing
 
@@ -194,6 +207,24 @@ let comprehension p b =
   match p with
   | [p] -> comprehension p b
   | _ -> failwith "comprehension cannot be used with several patterns."
+
+let pfixedpoint p b =
+  let rec split = function
+    | [] -> assert false
+    | [x] -> [] , x
+    | a::p ->
+        let (b,x) = split p in
+        a::b,x
+  in
+  let (a,x) = split p in
+  let params =
+    a |> List.map interp_pattern_small
+      |> fun l -> concat_with_sep l (text",")
+  in
+  mode M @@
+    concat [index mu (within_braces params);
+            interp_pattern_sup x; text ".\\,\\," ;
+            b ]
 
 let powerset u =
   concat [

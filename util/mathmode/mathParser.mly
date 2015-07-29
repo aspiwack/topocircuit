@@ -48,7 +48,7 @@ let body x = { body=x; subscript=None; superscript=None }
 %token FORALL EXISTS
 %token UNION INTERSECTION
 
-%token LAMBDA FAMILY COMPREHENSION
+%token LAMBDA FAMILY COMPREHENSION MU
 %token DOUBLEARROW
 %token COMPOSITION SEQ
 
@@ -170,6 +170,7 @@ spine:
 | INTERSECTION { intersection }
 | FAMILY { family }
 | COMPREHENSION { comprehension }
+| MU { pfixedpoint }
 
 %inline tuple(X):
   l=delimited(PARENL,separated_list(COMMA,X),PARENR) { l }
@@ -177,15 +178,17 @@ spine:
 %inline list(X):
   l=delimited(BRACKETL,separated_list(COMMA,X),BRACKETR) { l }
 
+typeannotation:
+| COLON a=expr {a}
+
 singletypedpattern:
-| p = pattern COLON a=expr { p , a }
+| p = pattern a=option(typeannotation) { p , a }
 
 typedpattern:
-| p = singletypedpattern { [p] }
-| p = nonempty_list (delimited(PARENL,singletypedpattern,PARENR)) { p }
+| p = nonempty_list(singletypedpattern) { p }
 
 pattern:
-| e=expr { e }
+| e=simple_expr { interp e }
 
 
 nonempty_context:
@@ -198,7 +201,6 @@ context:
 
 context_item:
 | p=singletypedpattern { default_interp_pattern p }
-| s=expr { s }
 
 sequent_right_hand:
 | e=expr { e }

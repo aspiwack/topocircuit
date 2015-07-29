@@ -16,6 +16,7 @@ let keywords = []
 
 let map_ident = [
   "lambda" , LAMBDA ;
+  "MU" , MU ;
   "family" , FAMILY ;
   "compr" , COMPREHENSION ;
 

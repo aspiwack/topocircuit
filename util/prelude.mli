@@ -70,7 +70,7 @@ val mlplatex : t -> Mlpost.Picture.t
 val within_parentheses : t -> t
 
 
-type pattern = Latex.t*Latex.t
+type pattern = Latex.t*(Latex.t option)
 val default_interp_pattern : pattern -> Latex.t
 
 val forall : pattern list -> Latex.t -> Latex.t
@@ -79,6 +79,11 @@ val union  : pattern list -> Latex.t -> Latex.t
 val intersection : pattern list -> Latex.t -> Latex.t
 val family : pattern list -> Latex.t -> Latex.t
 val comprehension : pattern list -> Latex.t -> Latex.t
+  
+(** [pfixedpoint] is unusual in that the last argument is treated
+    asymmetrically (it is at baseline whereas the other are at
+    toplevel). *)
+val pfixedpoint : pattern list -> Latex.t -> Latex.t
 
 val powerset : Latex.t -> Latex.t
 
