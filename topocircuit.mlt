@@ -60,7 +60,9 @@ Bounded height domain have the fixed-point property, just like other kinds of do
     "Every increasing function <%f:D->D%> for a bounded height domain <%D%> with a smallest element <%Bot%> has a smallest fixed-point."
       ~proof:"Let <%b%> be a bound on the height of <%D%>. The sequence <%Bot LEQ f Bot LEQ f^2 Bot LEQ %{ldots}% LEQ f^b Bot%> has length <%b+1%>. By definition, there is an <%i LT b%> such that <%f^i Bot = f^\(i+1\) Bot%> hence <%f^b Bot = f^i Bot%> is a fixed point.
 
-It is the smallest since, by induction, for any fixed point <%x_0%> of <%f%> and every <%k%>, <%f^k Bot LEQ x_0%>.  "}
+  It is the smallest since, by induction, for any fixed point <%x_0%> of <%f%> and every <%k%>, <%f^k Bot LEQ x_0%>.  "}
+
+Remark that we can refine the proof to show that the least fixed point of <%f%> is also its least pre-fixed point ({foreign"i.e."} such that <%f x LEQ x%>).
 
 Base types, which are sets, can be naturally identified to bounded height domains (without a smallest element).
 
@@ -141,7 +143,18 @@ lemma ~name:"Bekič"
     array_line [$=$;"<%(h a, \(mu g\) a \(h a\))%>"; "(definition of <%h%>)"];
   ]}
 
-We also have that <%MU (x,y), (f a x y, g a x y) = (f a \(MU a (x,y), (f a x y, g a x y)\) , g a \(MU a (x,y), (f a x y, g a x y)\) )%>. This allows us to test both components for being fixed points or the corresponding function, which will suffice to conclude."}
+  We also have that
+  {displaymath @@ array [`L;`L] [
+    array_line [empty;"<%MU (x,y), (f a x y, g a x y)%>"];
+    array_line [ $=$; "<%(f a \(MU (x,y), (f a x y, g a x y)\) , g a \(MU (x,y), (f a x y, g a x y)\) )%>"];
+  ]}
+
+  This allows us to test both components for being fixed points or the corresponding function, which will suffice to conclude.
+
+  {itemize [
+    "<%f a \(MU (x,y), (f a x y, g a x y)\) GEQ h a%>: by definition of <%h%> it suffices to show that <%f a \(MU (x,y), (f a x y, g a x y)\)%> is a pre-fixed point of <%lambda x, f a x \(\(mu g\) (a,x)\)%>. After tedious calculations, it amounts to proving, calling <%(x_0,y_0) = \(MU (x,y), (f a x y, g a x y)\)%>, that <%MU y, g a x_0 y LEQ y_0%>. It is easily checked that <%y_0%> is a fixed point of <%lambda y, g a x_0 y%>, which concludes this sub-proof.";
+    "<%g a \(MU (x,y), (f a x y, g a x y)\) GEQ \(mu g\) a \(h a\)%>. The argument is similar to above.";
+  ]}  "}
 "
 
 
