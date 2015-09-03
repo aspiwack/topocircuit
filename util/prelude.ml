@@ -530,6 +530,10 @@ let definition_bare = make_theorem (text"Definition")
 let definition ?label ?name def =
   definition_bare ?label ?caption:name def
 
+let remark_bare = make_theorem (text"Remark")
+let remark ?label ?name def =
+  remark_bare ?label ?caption:name def
+
 (*** Labels ***)
 
 (**** Bibliography ****)

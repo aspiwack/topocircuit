@@ -1,6 +1,9 @@
 open Prelude
 
+let codemode = Melt.Verbatim.convert (fun x -> x |> Latex.Verbatim.verbatim |> Latex.textsf)
+
 ##verbatim '%' = MathPlugin.mathmode
+##verbatim '#' = codemode
 (* arnaud: bind '#' on a Faust mode, at least an sf verbatim mode. *)
 
 (*** Holes ***)
@@ -13,6 +16,8 @@ let diagram_needed = small"[diagram]"
 
 let d_bhdomain = label ()
 let t_bhfixpoint = label ()
+let r_omegacpos = label ()
+let s_sequentialcircuits = label ()
 
 (*** Document ***)
 let abstract = "Leveraging topos theory a semantics can be given to sequential circuits where time-sensitive gates, such as unit delay, are treated uniformly with combinational gates. Both kinds of gates are functions in a particular topos: the topos of presheaves over the natural ordering of <%bbN%>. This is used to show that sequential circuits validate the equational theory of traced categories."
@@ -25,27 +30,27 @@ When giving semantics to circuits (typically boolean circuits), it is customary 
 
 This is not very convenient to reason equationally about moving unit delays for better placement. But this approach really breaks down when considering time-sensitive gates which are not simple unit delay. This article takes its root in the study of compilation of the circuit programming language Faust~{cite"Orlarey2004"}. Faust features a somewhat unusual kind of delay gate, written <#s@d#>, where <#s#> is an arbitrary signal, and <#d#> is a {emph"time-varying"} bounded natural number signal whose value at time <%t%> determines how far in the past of <#s#> to fetch the value of the delayed signal.
 
-With such a construct, it becomes impossible to ``cut'' a circuit into a combinational circuit. At least not without heavy modifications (the constrain that <#d#> is bounded is imposed in order to be able to compile the program in constant memory, so such a circuit can be reduced to use only unit delays).
+With such a construct, it becomes impossible to ``cut'' a circuit into a combinational circuit. At least not without heavy modifications (the constraint that <#d#> is bounded is imposed in order to be able to compile the program in constant memory, so such a circuit can be reduced to use only unit delays).
 
 To address this issue, let us turn to presheaves and topos theory. The critical property which we shall use is that topoi are models of constructive mathematics. Therefore we shall first develop a theory of combinational circuits in ordinary constructive mathematics, then lift it to sequential circuits {foreign"via"} a presheaf construction.
 
-Much work has been put(*citations*), recently, in using category theory to explain and exploit the linear algebraic aspects of circuits from control-theory. This article explores an orthogonal axis of the design space. Both can, and should, in principle be combined to obtain linear algebra with time. It is what signal processing is made of.
+Much work has been put~{citation_needed}, recently, in using category theory to explain and exploit the linear algebraic aspects of circuits from control-theory. This article explores an orthogonal axis of the design space. Both can, and should, in principle be combined to obtain linear algebra with time. It is what signal processing is made of.
 
-Before we move on, I have to start with an apology: despite the subject of topoi and presheaves being rather technical, I will be assuming quite a bit of familiarity with them in this article. I realise that this will make this article unnecessarily arduous for many. But in order for this article to be written at all, I felt I had to limit its scope thus.
+Before we move on, I have to start with an apology: despite the subject of topoi and presheaves being rather technical, I will be assuming quite a bit of familiarity with them in this article. I realise that this will make this article unnecessarily arduous for many. But in order for this article to be written at all, I felt I had to limit its scope so. A good, exhaustive, introduction to topos theory can be found in Mac Lane \& Moerdijk's {emph"Sheaves in geometry and logic"}~{cite"MacLaneMoerdijk1992"}.
 
 {paragraph"Acknowledgement"}
-I was once sitting with Noam Zeilberger listening to a seminar by Gérard Berry. About circuits. Berry's presentation was obviously of great interest to the both of us as we went on discussing its content for quite a while after that. At some point Zeilberger remarked: ``I don't really know what a circuit {emph"is"}'', and I suddenly realised that I didn't quite either; despite the intuitive, and occasionally concrete, content of circuits. If Zeilberger's remark gave you pause, as it did to me, then read on for my attempt at a definition.
+I was once sitting with Noam Zeilberger listening to a seminar by Gérard Berry. About circuits. Berry's presentation was obviously of great interest to the both of us as we went on discussing its content for quite a while after that. At some point Zeilberger remarked: ``I don't really know what a circuit {emph"is"}'', and I suddenly realised that I didn't quite either; despite the intuitive, and occasionally concrete, nature of circuits. If Zeilberger's remark gave you pause, as it did to me, then read on for my attempt at a definition.
 "
 
 let combinational = "{chapter"Combinational circuits"}
 
 It is direct to give a definition of combinational circuits if they are not allowed to have loops: just interpret each gate as a function a compose things appropriately. Or, more generally, if you are so disposed, interpret each gate as an arrow in some cartesian category, and interpret appropriately.
 
-The case that drove my interest, however, requires loops~--~aka feedback. Not that I'm particularly in need of delay-free loops, although this is of legitimate interest (see for instance~{citation_needed}), but the semantics which is developed in this section will be lifted in Section~{ref_needed} to sequential circuits, which are useless without feedbacks (even though we may very well require that these feedbacks all go through a delay).
+The case that drove my interest, however, requires loops~--~aka feedback. I am not particularly in need of delay-free loops, although this is of legitimate interest (see for instance~{cite"Mendler2012"}), but the semantics which is developed in this section will be lifted in Section~{ref_ s_sequentialcircuits} to sequential circuits which are useless without some form of feedback.
 
 {section"Constructive domain semantics"}
 
-As good computer scientist ought to when faced with tricky fixed point (even in circuits, loops are, after all, fixed points), let us turn to domains. Before we give a formal description of our semantics, let me note that it is a simple semantics of the rather venerable {emph"three-valued semantics"} of combinational boolean circuits~{citation_needed}, which, by the way, has been shown, with {foreign"caveats"}, to be a good semantics for electronic circuits~{citation_needed}.
+As good computer scientist ought to when faced with tricky fixed point (even in circuits, loops are, after all, fixed points), let us turn to domains. Before we give a formal description of our semantics, let me note that it is a straightforward variant of the rather venerable {emph"three-valued semantics"} of combinational boolean circuits~{cite"Malik1993"}, which, by the way, has been shown, with {foreign"caveats"}, to be a good semantics for electronic circuits~{cite"Mendler2012"}.
 
 Boolean circuits have, of course, a special relevance in computing science due to their being the basic building block of computers. But we will not restrict ourselves so. Wires will be allowed to carry values of any type we wish. The Faust programming language, for instance, has wires of type <%bbN%> and <%bbR%> (floating point numbers, in practice). The types, which, for the purpose of this article, are simply sets of permitted values, allowed for the wires by a circuit language will be called {emph"base types"}.
 
@@ -54,7 +59,7 @@ Boolean circuits have, of course, a special relevance in computing science due t
 
 Circuits will be given a semantics as increasing functions between such domains. To the extent that the material present in this section is different from the usual treatment it is to render this section constructive to be compatible with the topos of Section~{ref_needed}. This is the reason why we focus on bounded height domains rather than the more usual <%omega%>-{textsc"cpo"}s. Note also that <%b%>, in Definition~{ref_ d_bhdomain} is {emph"not"} the height of the domain but rather an upper bound on this height. The reason is that, constructively, there may not be an exact height (see also~{cite"CoquandSpiwack2010"} for more thoughts on finiteness in constructive mathematics). Every proof, in this section, is constructive.
 
-Bounded height domain have the fixed-point property, just like other kinds of domains. Note that the fixed-point property of {textsc"cpo"}s or <%omega%>-{textsc"cpo"}s are also constructive. The added value of bounded height domains is that there are really few constructive {textsc"cpo"}s or <%omega%>-{textsc"cpo"}s (see Remark~{ref_needed} below).
+Bounded height domain have the fixed-point property, just like other kinds of domains. Note that the fixed-point property of {textsc"cpo"}s or <%omega%>-{textsc"cpo"}s are also constructive. The added value of bounded height domains is that there are really few constructive {textsc"cpo"}s or <%omega%>-{textsc"cpo"}s (see Remark~{ref_ r_omegacpos} below).
 
 {theorem ~name:"Fixed-point property" ~label:t_bhfixpoint
     "Every increasing function <%f:D->D%> for a bounded height domain <%D%> with a smallest element <%Bot%> has a smallest fixed-point."
@@ -76,8 +81,6 @@ In order to use base types in conjunction with the fixed point property they nee
 {definition ~name:"Lifted domains"
     "Given a domain <%A%> with a bound <%b%> on its height, we construct a domain <%A_Bot%>, called {emph"lifted"}, by adding a distinguished element <%Bot%> to <%A%> and considering it smaller than every element of <%A%>: <%forall x:A, Bot LT x%>. The height of <%A_Bot%> is bounded by <%b+1%>"}
 
-(* arnaud: if I want to make an additional remark here, lifted flat domains are an example of bounded height domains which are not omega-cpo-s. *)
-
 Wires in circuits will be interpreted as taking value in the lifted flat domains corresponding to base types. Increasing functions between lifted flat domain are such that if <%f Bot <> Bot%>, then for any <%a%>, <%f a = f Bot%>. In particular, if <%f%> is such a function with several fixed points, then <%f Bot = Bot%> and the smallest fixed point is <%Bot%>. So <%Bot%> represents both the absence of a well-defined fixed point and the presence of several fixed points.
 
 Obviously, in order for the smallest fixed point of<%f%> to be non-<%Bot%>, <%f%> needs to ignore some of its input wires, for instance <%f%> could be the well-know parallel or:
@@ -93,6 +96,9 @@ Obviously, in order for the smallest fixed point of<%f%> to be non-<%Bot%>, <%f%
 When one of the input of the parallel or is <%1%>, then the output is <%1%>, whatever the behaviour of the other input. In particular the following circuit is well defined (it outputs <%1%>):
 
 {diagram_needed}
+
+{remark ~label:r_omegacpos
+    "Lifted flat domains are an example of bounded-height domains which are not necessarily {omega}-{textsc"cpo"}s, constructively. Indeed consider <%b1 = {0}%>, the singleton set, then <%b1_Bot%> is not constructively an {omega}-{textsc"cpo"}. An {omega}-chain in <%b1_Bot%> is an infinite sequence of <%Bot%> and <%0%> (such that after a <%0%>, every element is <%0%>). If an {omega}-chain has <%Bot%> as an upper bound, then all of its elements are <%Bot%>, if an {omega}-chain has <%0%> as an upper bound, at least one of its elements must be <%0%>{footnote"Purists may noticed that I have made use of Markov's principle in this statement: it's a valid thing to do, though since if something is unprovable from Markov's principle, it is certainly unprovable without. Alternatively, ``must'' in that sentence can be interpreted as the double-negation modality, in which case the statement is constructively true, and leads to a weaker, still non-constructive, version of the limited principle of omniscience."}. If every {omega}-chain had an upper bound, it would give a way to decide whether they contain a <%0%> or not, which is equivalent to the limited principle of omniscience: a known-to-be-non-constructive principle."}
 
 To formalise circuits with multiple wires we remark that bounded height domains are closed by cartesian products.
 
@@ -152,11 +158,13 @@ lemma ~name:"Bekič"
   This allows us to test both components for being fixed points or the corresponding function, which will suffice to conclude.
 
   {itemize [
-    "<%f a \(MU (x,y), (f a x y, g a x y)\) GEQ h a%>: by definition of <%h%> it suffices to show that <%f a \(MU (x,y), (f a x y, g a x y)\)%> is a pre-fixed point of <%lambda x, f a x \(\(mu g\) (a,x)\)%>. After tedious calculations{footnote"So tedious, in fact, that I ended up formalising most of this Section in Coq which, contrary to me, is not susceptible to calculation mistakes."}, it amounts to proving, calling <%(x_0,y_0) = \(MU (x,y), (f a x y, g a x y)\)%>, that <%MU y, g a x_0 y LEQ y_0%>. It is easily checked that <%y_0%> is a fixed point of <%lambda y, g a x_0 y%>, which concludes this sub-proof.";
+    "<%f a \(MU (x,y), (f a x y, g a x y)\) GEQ h a%>: by definition of <%h%> it suffices to show that <%f a \(MU (x,y), (f a x y, g a x y)\)%> is a pre-fixed point of <%lambda x, f a x \(\(mu g\) (a,x)\)%>. After tedious calculations{footnote"So tedious, in fact, that I ended up formalising most of this section in the Coq proof assistant which, contrary to me, is not susceptible to calculation mistakes. Plus, I was getting lost and could use the help. This goes to prove that for certain mathematical proofs, proof assistant can be a productive way to develop proofs."}, it amounts to proving, calling <%(x_0,y_0) = \(MU (x,y), (f a x y, g a x y)\)%>, that <%MU y, g a x_0 y LEQ y_0%>. It is easily checked that <%y_0%> is a fixed point of <%lambda y, g a x_0 y%>, which concludes this sub-proof.";
     "<%g a \(MU (x,y), (f a x y, g a x y)\) GEQ \(mu g\) a \(h a\)%>. The argument is similar to above.";
   ]}  "}
 "
 
+let sequential = "{chapter"Sequential circuits" ~label:s_sequentialcircuits}
+"
 
 let packages = [
   "inputenc" , "utf8" ;
@@ -188,6 +196,7 @@ let doc = concat [
   abstract;
   intro;
   combinational;
+  sequential;
   command \"bibliography\" [A,"library"] A;
 ]
 

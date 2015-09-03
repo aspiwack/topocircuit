@@ -9,6 +9,7 @@ let longvar x = SYMB (mathsf (text x))
 let number n = SYMB (mode M (text n))
 let calvar x = SYMB (mathcal (text x))
 let bbvar x = SYMB (mathbb (text x))
+let boldvar x = SYMB (mathbf (text x))
 
 (*** Global tables ***)
 
@@ -83,7 +84,7 @@ let regexp digit = ['0'-'9']
 let regexp lvar = lower_case['\'']*
 let regexp uvar = upper_case['\'']*
 let regexp cal_var = 'c' upper_case
-let regexp bold_var = 'b' letter
+let regexp bold_var = 'b' (letter|digit)
 let regexp bb_var = "bb" upper_case
 let regexp var_star = upper_case "_*"
 let regexp ident = letter+
@@ -109,6 +110,11 @@ let next k = lexer
       let l = String.length pre - 1 in
       (* removes the 'c' in front *)
       calvar (String.sub pre 1 l)
+  | bold_var ->
+      let pre = lexeme lexbuf in
+      let l = String.length pre - 1 in
+      (* removes the 'b' in front *)
+      boldvar (String.sub pre 1 l)
   | bb_var ->
       let pre = lexeme lexbuf in
       let l = String.length pre - 2 in
