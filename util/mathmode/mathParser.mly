@@ -62,6 +62,7 @@ let body x = { body=x; subscript=None; superscript=None }
 
 %token POWERSET
 %token OPP
+%token STREAM
 
 %start <Latex.t> math
 
@@ -126,6 +127,7 @@ spine:
 %inline pre1:
 | POWERSET { fun a -> powerset (interp a) }
 | OPP { fun n -> text"-"^^(interp n) }
+| STREAM { fun a -> index (mathbb(text"S")) (interp a) }
 
 //%inline pre2:
 

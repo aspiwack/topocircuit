@@ -48,7 +48,7 @@ let map_ident = [
 
   "opp" , OPP ;
 
-  "emptyact" , SYMB cdot;
+  "Stream" , STREAM;
 
   (*greek letters*)
   "alpha" , SYMB alpha ;
