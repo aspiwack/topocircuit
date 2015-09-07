@@ -181,6 +181,10 @@ To abstract over these notions, let us introduce a topos~--~{foreign"i.e."} a mo
 This topos has been extensively studied by Birkedal, Møgelberg, Schwinghammer \& Støvring~{cite"DBLP:journals/corr/abs-1208-3596"} under the name {emph"topos of trees"} to contribute to the related problem of step-indexing. Their article can serve as a reference.
 
 A causal set is, therefore, given by a family <%family n:bbN, A_n%> of sets together with {emph"restriction"} functions <%r_n:A_\(n+1\) -> A_n%>. Causal functions are families of functions <%family n:bbN, f_n%> such that <%r_n \(f_\(n+1\) a\) = f_n \(r_n a\)%>. Streams, seen, as above, as a progression of prefixes, form a causal set <%Stream A%> with <%(Stream A)_n = A^n%> and <%r_n \(w.a\) = w%>. Causal functions on <%Stream A%> are the same as defined above so that arrows in the topos of causal sets are, indeed, a generalisation of causal functions of streams.
+
+(* arnaud: define the term `prefix' in the context of causal sets? *)
+
+Topos are models of constructive mathematics, hence there is an interplay between {emph"internal"} statements of the topos of causal sets which are derived using the rules of constructive mathematics and {emph"external"} statements of ordinary mathematics. Internal statements are related to external statements via the Kripke-Joyal semantics~{cite"MacLaneMoerdijk1992"~extra:"Section VI.6"}: when <%phi%> is an internal proposition in context <%Gamma%> (<%Gamma%> is a (conjunction of) causal set giving sense to the free variables of <%phi%>), then for <%n IN bbN%> and <%alpha_n IN Gamma_n%> an external proposition <%n|=phi alpha_n%> is defined. The proposition <%n|=phi alpha_n%> means that <%phi%> holds at least until and including time <%n%>.
 "
 
 let packages = [

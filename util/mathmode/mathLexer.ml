@@ -134,6 +134,7 @@ let next k = lexer
   | "\\(" -> METAPARENL | "\\)" -> METAPARENR
 
   | "|-" | "⊢" -> TURNSTYLE
+  | "|=" -> STRONGTURNSTYLE
 
   | "," -> COMMA | ";" -> SEMICOLON
   | ":" -> COLON

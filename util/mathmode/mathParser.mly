@@ -55,6 +55,7 @@ let body x = { body=x; subscript=None; superscript=None }
 %token IN SUBSET CUP CAP
 %token STAR
 %token LEQ LT GEQ GT
+%token STRONGTURNSTYLE
 
 %token EQUAL NEQUAL
 
@@ -160,6 +161,7 @@ spine:
 | GT { text">" }
 | COMPOSITION { circ }
 | SEQ { cdot }
+| STRONGTURNSTYLE { models }
 
 %inline op2s:
 | SUB { fun a b -> push_sub (interp b) a }
