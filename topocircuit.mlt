@@ -14,6 +14,8 @@ let diagram_needed = small"[diagram]"
 
 (*** labels ***)
 
+let s_combinationalcircuits = label ()
+let s_trace = label ()
 let d_bhdomain = label ()
 let t_bhfixpoint = label ()
 let r_omegacpos = label ()
@@ -42,7 +44,7 @@ Before we move on, I have to start with an apology: despite the subject of topoi
 I was once sitting with Noam Zeilberger listening to a seminar by Gérard Berry. About circuits. Berry's presentation was obviously of great interest to the both of us as we went on discussing its content for quite a while after that. At some point Zeilberger remarked: ``I don't really know what a circuit {emph"is"}'', and I suddenly realised that I didn't quite either; despite the intuitive, and occasionally concrete, nature of circuits. If Zeilberger's remark gave you pause, as it did to me, then read on for my attempt at a definition.
 "
 
-let combinational = "{chapter"Combinational circuits"}
+let combinational = "{chapter"Combinational circuits" ~label:s_combinationalcircuits}
 
 It is direct to give a definition of combinational circuits if they are not allowed to have loops: just interpret each gate as a function a compose things appropriately. Or, more generally, if you are so disposed, interpret each gate as an arrow in some cartesian category, and interpret appropriately.
 
@@ -57,9 +59,9 @@ Boolean circuits have, of course, a special relevance in computing science due t
 {definition ~label:d_bhdomain ~name:"Bounded height domain"
     "A bounded height domain is a partially ordered set <%D%> equipped with a number <%b%> such that every increasing chain <%x_1 LEQ %{ldots}% LEQ x_n%> in <%D%> with <%n GT b%> has a pair <%x_i GEQ x_j%> with <%i LT j%> (equivalently, for every <%i LEQ k LEQ j%>, <%x_i = x_k%>)."}
 
-Circuits will be given a semantics as increasing functions between such domains. To the extent that the material present in this section is different from the usual treatment it is to render this section constructive to be compatible with the topos of Section~{ref_needed}. This is the reason why we focus on bounded height domains rather than the more usual <%omega%>-{textsc"cpo"}s. Note also that <%b%>, in Definition~{ref_ d_bhdomain} is {emph"not"} the height of the domain but rather an upper bound on this height. The reason is that, constructively, there may not be an exact height (see also~{cite"CoquandSpiwack2010"} for more thoughts on finiteness in constructive mathematics). Every proof, in this section, is constructive.
+Circuits will be given a semantics as increasing functions between such domains. To the extent that the material present in this section is different from the usual treatment it is to render this section constructive to be compatible with the topos of Section~{ref_ s_sequentialcircuits}. This is the reason why we focus on bounded height domains rather than the more usual <%omega%>-{textsc"cpo"}s. Note also that <%b%>, in Definition~{ref_ d_bhdomain} is {emph"not"} the height of the domain but rather an upper bound on this height. The reason is that, constructively, there may not be an exact height (see also~{cite"CoquandSpiwack2010"} for more thoughts on finiteness in constructive mathematics). Every proof, in this section, is constructive.
 
-Bounded height domain have the fixed-point property, just like other kinds of domains. Note that the fixed-point property of {textsc"cpo"}s or <%omega%>-{textsc"cpo"}s are also constructive. The added value of bounded height domains is that there are really few constructive {textsc"cpo"}s or <%omega%>-{textsc"cpo"}s (see Remark~{ref_ r_omegacpos} below).
+Bounded height domain have the fixed-point property, just like other kinds of domains. Note that the fixed-point property of {textsc"cpo"}s or <%omega%>-{textsc"cpo"}s are also constructive. The added value of bounded height domains is that there are really few constructive {textsc"cpo"}s or <%omega%>-{textsc"cpo"}s (see Remark~{ref_ r_omegacpos} below). Another practical advantage of bounded height domain is that the fixed-point property applies to all increasing functions, which will free us from proving continuity.
 
 {theorem ~name:"Fixed-point property" ~label:t_bhfixpoint
     "Every increasing function <%f:D->D%> for a bounded height domain <%D%> with a smallest element <%Bot%> has a smallest fixed-point."
@@ -110,7 +112,7 @@ To formalise circuits with multiple wires we remark that bounded height domains 
 
 Combinational gates are, therefore, interpreted as increasing functions of type <%A_1_Bot*%{ldots}%*A_n_Bot -> A_\(n+1\)_Bot*%{ldots}%*A_p_Bot%> (with each <%A_i%> being a base type). We call a gate <%g%> {emph"strict"} if it for any <%(x_1,%{ldots}%,x_n)%> where at least one of the <%x_i%> is <%Bot%> then <%g x_1%{ldots}% x_n = (y_1,%{ldots}%,y_p)%> where at least one of the <%y_i%> is <%Bot%>.
 
-{section"Traced category"}
+{section"Traced category" ~label:s_trace}
 
 What is left is to use the fixed-point property to make precise the definition of feedback wires, the solution is given by Hasegawa~{cite"Hasegawa1997"~extra:"Theorem 3.1"} who gives a method to transform fixed-point operators into traces.
 
@@ -167,7 +169,7 @@ let sequential = "{chapter"Sequential circuits" ~label:s_sequentialcircuits}
 
 Adding time-sensitive gates forces to change the semantics. Sequential circuits are not to be seen as functions from (product of) base types to base types, but rather as functions from streams of base types to stream of base types. Unfortunately, the type <%A^bbN%> of streams of a finite height domain <%A%> is not a finite height domain in any useful way.
 
-To be able to model feedback, a change a perspective will be needed. The typical approach to analysis of sequential circuits with feedback is to ``cut'' unit delays making their incoming wire into a special new output and the outgoing wire into a special new input. What makes this transformation even meaningful is the requirement that to compute a finite prefix of length <%n%> of a circuit's output, only a finite prefix of length <%n%> of the input is necessary. This requirement is called {emph"causality"}{footnote"It is possible to relax the requirement that input prefixes map to output prefixes of the precise same length. But no generality will be gained as the model presented in this section will be able to accommodate more general notions of causality as stream transformations."}.
+To be able to model feedback, a change a perspective will be needed. The typical approach to analysis of sequential circuits with feedback is to ``cut'' unit delays making their incoming wire into a special new output and the outgoing wire into a special new input. What makes this transformation even meaningful is the requirement that to compute a finite prefix of length <%n%> of a circuit's output, only a finite prefix of length <%n%> of the input is necessary. This requirement is called {emph"causality"}{footnote"It is possible to relax the requirement that input prefixes map to output prefixes of the precise same length. But no generality will be gained as the model presented in this section will be able to accommodate more general notions of causality {foreign"via"} stream transformations."}.
 
 {section"Causal sets"}
 
@@ -184,8 +186,37 @@ A causal set is, therefore, given by a family <%family n:bbN, A_n%> of sets toge
 
 (* arnaud: define the term `prefix' in the context of causal sets? *)
 
-Topos are models of constructive mathematics, hence there is an interplay between {emph"internal"} statements of the topos of causal sets which are derived using the rules of constructive mathematics and {emph"external"} statements of ordinary mathematics. Internal statements are related to external statements via the Kripke-Joyal semantics~{cite"MacLaneMoerdijk1992"~extra:"Section VI.6"}: when <%phi%> is an internal proposition in context <%Gamma%> (<%Gamma%> is a (conjunction of) causal set giving sense to the free variables of <%phi%>), then for <%n IN bbN%> and <%alpha_n IN Gamma_n%> an external proposition <%n|=phi alpha_n%> is defined. The proposition <%n|=phi alpha_n%> means that <%phi%> holds at least until and including time <%n%>.
+Topos are models of constructive mathematics, hence there is an interplay between {emph"internal"} statements of the topos of causal sets which are derived using the rules of constructive mathematics and {emph"external"} statements of ordinary mathematics. Internal statements are related to external statements via the Kripke-Joyal semantics~{cite"MacLaneMoerdijk1992"~extra:"Section VI.6"}: when <%phi%> is an internal proposition in context <%Gamma%> (<%Gamma%> is a (conjunction of) causal set giving sense to the free variables of <%phi%>), then for <%n IN bbN%> and <%alpha_n IN Gamma_n%> an external proposition <%n|=phi alpha_n%> is defined. The proposition <%n|=phi alpha_n%> means that <%phi%> holds at least until and including time <%n%> on <%alpha_n%>. The main property being that if <%phi%> is provable in constructive mathematics (usually written <%|-phi%>), then for all <%n%> and <%alpha_n%>, <%n|=phi alpha_n%>. And conversely, if <%phi%> is such that <%n|=phi alpha_n%> then <%phi%> is internally valid.
+
+{section "Causal domains"}
+
+Let us now endeavour to give an external description of internal bounded height domain, so as to show that <%Stream \(A_Bot\)%> is an internal bounded height domain for some base type <%A%>.
+
+The ordering relation is reflexive: <%|-x LEQ x%>. That is, <%n|=alpha_n LEQ alpha_n%> for any <%n%> and <%alpha_n%>. In other words, a reflexive causal relation, is a family of reflexive relations on each sets of prefixes (compatible with restrictions). The same holds for symmetry and transitivity, such that an internal ordering relation is an ordering relation on each prefix{footnote"The reader may be worried about the implication in the statement of symmetry and transitivity, since the interpretation of implication is not direct in the Kripke-Joyal semantics. But it doesn't matter at ``toplevel'': <%|- x LEQ y -> y LEQ x%> translates to <%forall n alpha_n beta_n, forall \(k LEQ n\), k|=r^\(n-k\) alpha_n LEQ r^\(n-k\) beta_n -> k|= r^\(n-k\) beta_n LEQ r^\(n-k\) alpha_n%> which is equivalent to <%forall n alpha_n beta_n, n|=alpha_n LEQ beta_n -> n|=beta_n LEQ alpha_n%>."}.
+
+(* arnaud: subscripts are often omitted in causal functions *)
+
+The translation of ordering relations illustrate the purpose of causal sets: to make it possible to reason on finite prefixes of infinite data. This is, indeed, what we were looking for, to be able to use the fact that prefixes of <%Stream \(A_Bot\)%> are bounded height domains. We should expect, at this point, that internal bounded height domains are exactly those causal set where <%A_n%> is a bounded height domain for each <%n%>, which is indeed the essentially the case.
+
+The key observation is that the casual <%List A%> which is the initial algebra of the functor <%A * X + 1%> can be defined as <%(List A)_n = List \(A_n\)%>. The restriction functions act pointwise on the elements of each list. Therefore, since subsets are taken pointwise {foreign"i.e."} <%\(compr x:A, phi x\)_n = compr x:A_n, phi_n x%>, chains internal to the topos of causal sets are chains on prefixes (compatible with restrictions).
+
+Thanks to this observation, the internal definition of bounded height domain can be interpreted: <%b_n IN bbN%> is a bound on the height of <%A%> at time <%n%> if for all <%k LEQ n%>, <%b_n%> is a bound on the height of <%A_k%> in the ordinary sense. An internal domain <%A%> has a smallest element if each of the <%A_n%> has and restrictions map smallest elements to smallest elements.
+
+{lemma "The causal set <%Stream \(A_Bot\)%>, for some ordinary set <%A%>, is a finite height domain with a smallest element internal to the topos of causal sets." ~proof:"Since the height <%(Stream \(A_Bot\))_n = A_Bot^n%> is bounded by <%2^n%>, which also bounds all the <%A_Bot^k%> for <%k LEQ n%>. The smallest element of <%A_n%> is <%(Bot,%{ldots}%,Bot)%>."}
+
+As a consequence, we can build circuits as causal increasing functions <%Stream A_1_Bot*%{ldots}%*Stream A_n_Bot -> Stream A_\(n+1\)_Bot*%{ldots}%*Stream A_p_Bot%> and feedback wires can be interpreted as internal least fixed point like in Section~{ref_ s_combinationalcircuits}. The <%n%>-th prefix of a causal increasing function is a sequence <%family \(i LEQ n\), \(f_i IN A_i->B_i\)%> each of the <%f_i%> being increasing, and such that <%r_i\(f_\(i+1\) a\) = f_i\(r_i a\)%>.
+
+What remains to be figured out is what a fixed point internal to the topos of causal set is. The internal formula for a fixed point is <%f a = a%> which translates to <%f_n a_n = a_n%> for any <%n%> (note that <%f%>, being an internal function, {foreign"i.e."} an element of <%A^A%>, has prefixes <%family \(i LEQ n\), \(f_i IN A_i->B_i\)%>, so <%f_n IN A_n -> A_n%>). Therefore the internal fixed point may is a fixed point at each prefix.
+
+{section"Lifting traces"}
+
+The results of the above section, while elegant, do not demonstrate effectively the usefulness of the topos-theoretic semantics: indeed, the treatment of the previous section could have been carried out directly just as easily without requiring topos-theoretic baggage. However, when all this material is developed, it becomes possible to easily lift more powerful theorems directly from the combinational semantics. Let us apply this principle to Hasegawa's theorem from Section~{ref_ s_trace}.
+
+Hasegawa's theorem being an external statement about categories, we will have to translate the statement (but, crucially, not the proofs) of all four lemmas and show that they correspond to the hypotheses of Hasegawa's theorem.
 "
+
+(* arnaud: come back on strict gates: consider elaborating on well-formed sequential circuits then proof-read original statement. *)
+(* conclusion: syntax, Jaber/Sozeau/Tabareau, well-formedness?(if not in main body) *)
 
 let packages = [
   "inputenc" , "utf8" ;
