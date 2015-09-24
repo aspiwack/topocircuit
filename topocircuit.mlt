@@ -125,7 +125,7 @@ Traced categories~{citation_needed} provide a graphical language which is essent
 
 We need to check the <%mu f%> is indeed increasing. But since <%f%> is increasing, for any <%a LEQ a'%> and any <%x LEQ x'%>  <%f a x LEQ f a' x'%>; by induction, we conclude that <%\(mu f\) a LEQ \(mu f\) a'%>."}
 
-Hasegawa tells us that there are three properties to verify for a fixed point operator to yield a trace (note that, reciprocally, all traces in a cartesian category yield such a fixed point operator). We shall write <%MU a x, f a x%> instead of <%mu\(lambda (a,x), f a x\)%>. In addition and by definition, <%(MU a x, f a x) a_0 = MU x, f a_0 x%>; since the former is cumbersome, we will use the latter as a short-hand.
+Hasegawa tells us that there are three properties to verify for a fixed point operator to yield a trace (note that, reciprocally, all traces in a cartesian category yield such a fixed point operator). We shall write <%MU a x, f a x%> instead of <%mu\(lambda (a,x), f a x\)%>. In addition and by definition, <%(MU a x, f a x) a_0 = MU x, f a_0 x%>; since the former is cumbersome, we will use the latter as a shorthand.
 
 {lemma ~name:"Naturality in <%A%>"
   "For any <%f:A*X->X%> and <%g:B->A%>, the following holds: <%MU b x, f\(g b\) x = \(mu f\) COMP g%>."
