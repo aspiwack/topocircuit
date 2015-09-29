@@ -13,7 +13,7 @@ Sources
 
 ### Building instructions ###
 
-To build the article, you need to have a Latex distribution installed, as well as Ocaml (version 3.12 or later) and the melt text processing tool. The command line to run is `ocamlbuild axhurkens.pdf`. You can then find the pdf file in `_build/axhurkens.pdf`
+To build the article, you need to have a Latex distribution installed, as well as Ocaml (version 3.12 or later) and the melt text processing tool. The command line to run is `ocamlbuild topocircuit.pdf`. You can then find the pdf file in `_build/topocircuit.pdf`
 
 ### License ###
 
