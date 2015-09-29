@@ -4,7 +4,6 @@ let codemode = Melt.Verbatim.convert (fun x -> x |> Latex.Verbatim.verbatim |> L
 
 ##verbatim '%' = MathPlugin.mathmode
 ##verbatim '#' = codemode
-(* arnaud: bind '#' on a Faust mode, at least an sf verbatim mode. *)
 
 (*** Holes ***)
 
@@ -110,7 +109,7 @@ To formalise circuits with multiple wires we remark that bounded height domains 
 
   We begin with the simplest representation where every pair <%(x,l)%> is an <%(x,[y])%>. Now, as long as our list is of size longer than <%b_A%> (without loss of generality we can suppose both <%b_A%> and <%b_B%> to be non-zero) we can use the fact that the first components describe a chain to find consecutive positions with the same <%x%> which we can contract. Hence strictly reducing the size of our list. This process gives us a contracted representation of the long chain of length <%b_A%> or less. But, since the total length of the chain is larger than <%b_A*b_B%>, there must be at least one second-component list with length larger than <%b_B%>. Applying the definition of the bound <%b_B%> to this list concludes the proof."}
 
-Combinational gates are, therefore, interpreted as increasing functions of type <%A_1_Bot*%{ldots}%*A_n_Bot -> A_\(n+1\)_Bot*%{ldots}%*A_p_Bot%> (with each <%A_i%> being a base type). We call a gate <%g%> {emph"strict"} if it for any <%(x_1,%{ldots}%,x_n)%> where at least one of the <%x_i%> is <%Bot%> then <%g x_1%{ldots}% x_n = (y_1,%{ldots}%,y_p)%> where at least one of the <%y_i%> is <%Bot%>.
+Combinational gates are, therefore, interpreted as increasing functions of type <%A_1_Bot*%{ldots}%*A_n_Bot -> A_\(n+1\)_Bot*%{ldots}%*A_p_Bot%> (with each <%A_i%> being a base type). (* We call a gate <%g%> {emph"strict"} if it for any <%(x_1,%{ldots}%,x_n)%> where at least one of the <%x_i%> is <%Bot%> then <%g x_1%{ldots}% x_n = (y_1,%{ldots}%,y_p)%> where at least one of the <%y_i%> is <%Bot%>. *)
 
 {section"Traced category" ~label:s_trace}
 
@@ -214,15 +213,32 @@ The results of the above section, while elegant, do not demonstrate effectively 
 
 Hasegawa's theorem being an external statement about categories, we will have to translate the statement (but, crucially, not the proofs) of all four lemmas and show that they correspond to the hypotheses of Hasegawa's theorem. Fortunately, this is rendered easy thanks to some standard properties: causal functions are the same as global sections <%1->B^A%> (where <%1%> is the terminal causal set: <%1_n%> is the singleton set for every <%n%>), internal equality is interpreted as external equality, and the terms <%lambda x, x%> and <%lambda x, f \(g x\)%> are interpreted as identity and composition, respectively. From these, we can immediatly deduce that it makes sense to speak of a causal function which is internally increasing, and therefore, that the causal bounded-height domains with a smallest elements and internally increasing causal functions form a subcategory of the topos of causal sets.
 
-A slightly trickier property is the local fixed-point operator whose existence is proven internally. Remember that <%exists x:A, P x%> is interpreted by <%forall n:bbN, exists x_n:A_n, P x_n%> there are no connection between the <%x_n%> chosen at each <%n%> so there is not necessarily a global section <%1->A%> that witnesses the existential. However, when the <%x%> not only exists, but is also unique, then, since <%P x_\(n+1\) => P \(r_n x_\(n+1\)\)%>, then all the <%x_n%> necessarily respect the restriction maps of <%A%>, hence form a global section. There is, of course, at most one local fixed-point map, hence, we internal existence guarantees external existence of a global section, which can be turned into an external map <%mu%> from causal functions to causal functions.
+A slightly trickier property is the local fixed-point operator whose existence is proven internally. Remember that <%exists x:A, P x%> is interpreted by <%forall n:bbN, exists x_n:A_n, P x_n%> there are no connection between the <%x_n%> chosen at each <%n%> so there is not necessarily a global section <%1->A%> that witnesses the existential. However, when the <%x%> not only exists, but is also unique, then, since <%P x_\(n+1\) => P \(r_n x_\(n+1\)\)%>, then all the <%x_n%> necessarily respect the restriction maps of <%A%>, hence form a global section. There is, of course, at most one local fixed-point map, hence, internal existence guarantees external existence of a global section, which can be turned into an external map <%mu%> from causal functions to causal functions.
 
-The rest of the properties: that <%mu%> is, indeed, a local fixed-point map, that it is natural in <%A%> and <%X%> and that it verify Bekič's lemma, are all universally quantified equality involving composition of arrows (and <%mu%>). They can be changed into their categorical counterpart with just a bit of fiddling.
+The rest of the properties: that <%mu%> is, indeed, a local fixed-point map, that it is natural in <%A%> and <%X%> and that it verify Bekič's lemma, are all universally quantified equalities involving composition of arrows (and <%mu%>). They can be changed into their categorical counterparts with just a bit of fiddling.
 
 We can, therefore, conclude, with barely any proof pertaining to time, that sequential circuits obey the laws of traced categories.
 "
+let conclusion = "{chapter'"Conclusion"}
+
+The topos theoretic approach to sequential circuit theory could be unfolded and give rise to a semantics free of all things toposes. As I have hinted in the course of this article, the semantics itself would not be particularly complex, however proofs are significantly simpler making use of the internal logic of the topos (sometimes called the synthetic point of view). Proving that sequential circuits form a traced category, for instance, almost completely ignored the difference between sequential and combinational circuits.
+
+This article can be seen both as a contribution to the growing body of applications of the synthetic approach to mathematical problems, and as a proposal to further the understanding of the mathematics of circuits which, despite being a fundamental concept in computer science is still rather obscure and hard to reason about.
+
+I should mention that the circuits considered are partial, in that they may return <%Bot%>, an ill-formed value. We are really interested in total circuits which do not; but as is the case for total recursive functions, total circuits have no reason to be composable. Fortunately, it is reasonably easy to characterise total circuits: there is a (natural) causal function <%eta_A:Stream A -> Stream A_Bot%> we say that a circuit <%c:Stream A_Bot -> Stream B_Bot%> is total if the composite function <%c COMP eta_A%> factors through <%eta_B%>, {foreign"i.e."} if there is <%c':Stream A -> Stream B%> such that <%c COMP eta_A = eta_B COMP c'%>. This is straightforwardly extended to several inputs and outputs.
+
+Circuits are built by composition and taking a trace. Composition of total circuits is total, only taking a trace can turn a total circuit into a non-total one. The standard way to take a trace safely is to ensure that ``somewhere on the path'' there is a delay. This condition is captured, in the topos of causal sets, by the notion of contractivity which can be internalised and used synthetically~{cite"DBLP:journals/corr/abs-1208-3596"}. Contractivity is an example of notion, in the internal logic of the topos of causal sets, which goes beyond standard constructive mathematics. It, indeed, ensures that trace can be taken safely.
+
+What may render the synthetic approach difficult is, beyond the need to use constructive mathematics, is the translation of a synthetic statement into an ordinary one. It is tedious and precise, and, though it probably gets better with training, it is hard to convince oneself no error has been made in the process. This is where a proof assistant would be of great help, and be much more efficient at such a task than a human. There is a prototype for the Coq proof assistant by Jaber, Sozeau \& Tabareau~{cite"Jaber2012"} which handles the special case of presheaves over a preorder. It is sufficient for the topos in this article, so I could have used it to help with the translations of Section~{ref_ s_sequentialcircuits}. Since most of Section~{ref_ s_combinationalcircuits} has already been formalised in Coq, it is not particularly far-fetched. However, I have unfortunately not taken time to learn how to use this tool.
+
+To conclude, I feel I should say a few words about syntax, after spending this article on the semantics of circuits. When working with circuits we tend to assume that reorganising of wires preservers syntax so that the following two composition of diagonals are equal:
+{displaymath diagram_needed}(* arnaud: co-associativity of diagonals *)
+But that rearranging gates does not:
+{displaymath diagram_needed}(* arnaud: gate-diagonal neq diagonal<gate,gate*)
+
+It is customary to take syntax to be a free something, and since our semantics is a traced cartesian category, we may be tempted to take the syntax of circuit to be the free traced cartesian category but that would identify both sides in the latter diagram. Instead, the syntax of circuits should be the free construction of some kind of traced categories with diagonals, where diagonals and augmentations (wires to the empty product) have the usual co-associativity and co-neutrality laws, but are not natural transformations."
 
 (* arnaud: come back on strict gates: consider elaborating on well-formed sequential circuits then proof-read original statement. *)
-(* conclusion: syntax, Jaber/Sozeau/Tabareau, well-formedness?(if not in main body) *)
 
 let packages = [
   "inputenc" , "utf8" ;
@@ -255,6 +271,7 @@ let doc = concat [
   intro;
   combinational;
   sequential;
+  conclusion;
   command \"bibliography\" [A,"library"] A;
 ]
 
