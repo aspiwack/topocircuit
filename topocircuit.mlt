@@ -7,8 +7,8 @@ let codemode = Melt.Verbatim.convert (fun x -> x |> Latex.Verbatim.verbatim |> L
 
 (*** Holes ***)
 
-let citation_needed = small"[?]"
-let ref_needed = small"[?]"
+(* let citation_needed = small"[?]" *)
+(* let ref_needed = small"[?]" *)
 let diagram_needed = small"[diagram]"
 
 (*** labels ***)
@@ -35,7 +35,7 @@ With such a construct, it becomes impossible to ``cut'' a circuit into a combina
 
 To address this issue, let us turn to presheaves and topos theory. The critical property which we shall use is that topoi are models of constructive mathematics. Therefore we shall first develop a theory of combinational circuits in ordinary constructive mathematics, then lift it to sequential circuits {foreign"via"} a presheaf construction.
 
-Much work has been put~{citation_needed}, recently, in using category theory to explain and exploit the linear algebraic aspects of circuits from control-theory. This article explores an orthogonal axis of the design space. Both can, and should, in principle be combined to obtain linear algebra with time. It is what signal processing is made of.
+Much work has been put~{cite"Bonchi2015,Baez2015"}, recently, in using category theory to explain and exploit the linear algebraic aspects of circuits from control-theory. This article explores an orthogonal axis of the design space. Both can, and should, in principle be combined to obtain linear algebra with time. It is what signal processing is made of.
 
 Before we move on, I have to start with an apology: despite the subject of topoi and presheaves being rather technical, I will be assuming quite a bit of familiarity with them in this article. I realise that this will make this article unnecessarily arduous for many. But in order for this article to be written at all, I felt I had to limit its scope so. A good, exhaustive, introduction to topos theory can be found in Mac Lane \& Moerdijk's {emph"Sheaves in geometry and logic"}~{cite"MacLaneMoerdijk1992"}.
 
@@ -115,7 +115,7 @@ Combinational gates are, therefore, interpreted as increasing functions of type 
 
 What is left is to use the fixed-point property to make precise the definition of feedback wires, the solution is given by Hasegawa~{cite"Hasegawa1997"~extra:"Theorem 3.1"} who gives a method to transform fixed-point operators into traces.
 
-Traced categories~{citation_needed} provide a graphical language which is essentially the same as circuits with feedback. It is reassuring that circuits can be interpreted as arrows in such a traced category. It provides a natural equational theory on circuits which can be, among other things, leveraged to produce compilation schemes~{citation_needed}.
+Traced categories~{cite"Joyal1996"} provide a graphical language which is essentially the same as circuits with feedback. It is reassuring that circuits can be interpreted as arrows in such a traced category. It provides a natural equational theory on circuits which can be, among other things, leveraged to produce optimisation schemes~{cite"Liu2009"}.
 
 {lemma ~name:"Local fixed-point property"
     "Theorem~{ref_ t_bhfixpoint} can be extended to produce a local fixed point function: let <%f:A*X->X%> an increasing function (<%A%> and <%X%> bounded height domain with a smallest element), there is an increasing function <%mu f:A->X%>, such that for any <%a:A%>, <%\(mu f\) a%> is the least fixed point of the increasing function <%lambda x, f a x%>."
@@ -168,7 +168,7 @@ let sequential = "{chapter"Sequential circuits" ~label:s_sequentialcircuits}
 
 Adding time-sensitive gates forces to change the semantics. Sequential circuits are not to be seen as functions from (product of) base types to base types, but rather as functions from streams of base types to stream of base types. Unfortunately, the type <%A^bbN%> of streams of a finite height domain <%A%> is not a finite height domain in any useful way.
 
-To be able to model feedback, a change a perspective will be needed. The typical approach to analysis of sequential circuits with feedback is to ``cut'' unit delays making their incoming wire into a special new output and the outgoing wire into a special new input. What makes this transformation even meaningful is the requirement that to compute a finite prefix of length <%n%> of a circuit's output, only a finite prefix of length <%n%> of the input is necessary. This requirement is called {emph"causality"}{footnote"It is possible to relax the requirement that input prefixes map to output prefixes of the precise same length. But no generality will be gained as the model presented in this section will be able to accommodate more general notions of causality {foreign"via"} stream transformations."}.
+To be able to model feedback, a change a perspective will be needed. The typical approach to analysis of sequential circuits with feedback is to ``cut'' unit delays making their incoming wire into a special new output and the outgoing wire into a special new input. What makes this transformation even meaningful is the requirement that to compute a finite prefix of length <%n%> of a circuit's output, only a finite prefix of length <%n%> of the input is necessary. This requirement is called {emph"causality"}.
 
 {section"Causal sets"}
 
