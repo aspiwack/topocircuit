@@ -6,7 +6,7 @@ Arnaud Spiwack
 Abstract
 --------
 
-Leveraging topos theory a semantics can be given to sequential circuits where time-sensitive gates, such as unit delay, are treated uniformly with combinational gates. Both kinds of gates are functions in a particular topos: the topos of presheaves over the natural ordering of <%bbN%>. This is used to show that sequential circuits validate the equational theory of traced categories.
+Leveraging topos theory a semantics can be given to sequential circuits where time-sensitive gates, such as unit delay, are treated uniformly with combinational gates. Both kinds of gates are functions in a particular topos: the topos of presheaves over the natural ordering of ℕ. This is used to show that sequential circuits validate the equational theory of traced categories.
 
 Sources
 -------
