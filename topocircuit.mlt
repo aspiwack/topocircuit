@@ -96,7 +96,49 @@ Obviously, in order for the smallest fixed point of<%f%> to be non-<%Bot%>, <%f%
 
 When one of the input of the parallel or is <%1%>, then the output is <%1%>, whatever the behaviour of the other input. In particular the following circuit is well defined (it outputs <%1%>):
 
-{diagram_needed}
+{displaybox @@ mlpost begin
+  let open Mlpost in
+  let lines ps =
+    let path = Path.pathp ~style:Path.jLine ps in
+    Path.draw path
+  in
+  let line p1 p2 = lines [p1;p2] in
+  let por =
+    picture_of_latex (textsf"por") |> Box.pic |> Box.rect ~dx:(Num.mm 1.) ~dy:(Num.mm 2.)
+  in
+  let east_port = Box.east por in
+  let cross_point = east_port |> Point.shift Point.(scale (Num.mm 5.) right) in
+  let output = cross_point |> Point.shift Point.(scale (Num.mm 10.) right) in
+  let output_wire = line east_port output in
+  let west_port1 = Box.west por |> Point.shift Point.(scale (Num.mm 2.) up) in
+  let west_port2 = Box.west por |> Point.shift Point.(scale (Num.mm 2.) down) in
+  let input_1 = west_port1 |> Point.shift Point.(scale (Num.mm 10.) left) in
+  let input_1_label =
+    picture_of_latex"1" |> Picture.center input_1 |> Picture.shift Point.(scale (Num.mm 3.) up)
+  in
+  let input_1_wire = line input_1 west_port1 in
+  let turn_point_se = cross_point |>  Point.shift Point.(scale (Num.mm 10.) down) in
+  let turn_point_w = west_port2 |> Point.shift Point.(scale (Num.mm 5.) left) in
+  let turn_point_sw = turn_point_w |> Point.shift Point.(scale (Num.mm 8.) down) in
+  let back_wire = lines [cross_point;turn_point_se;turn_point_sw;turn_point_w;west_port2] in
+  Command.seq [
+    Box.draw por;
+    output_wire;
+    Point.draw ~brush:(Brush.t ~scale:(Num.mm 3.) ()) input_1;
+    input_1_label;
+    input_1_wire;
+    back_wire;
+
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) cross_point; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) output; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) west_port1; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) west_port2; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) turn_point_se; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) turn_point_sw; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) turn_point_w; *)
+  ] |> Picture.scale (Num.of_float 1.5)
+end}
+More useful examples can be found in~{cite"Malik1993,Mendler2012"}.
 
 {remark ~label:r_omegacpos
     "Lifted flat domains are an example of bounded-height domains which are not necessarily {omega}-{textsc"cpo"}s, constructively. Indeed consider <%b1 = {0}%>, the singleton set, then <%b1_Bot%> is not constructively an {omega}-{textsc"cpo"}. An {omega}-chain in <%b1_Bot%> is an infinite sequence of <%Bot%> and <%0%> (such that after a <%0%>, every element is <%0%>). If an {omega}-chain has <%Bot%> as an upper bound, then all of its elements are <%Bot%>, if an {omega}-chain has <%0%> as an upper bound, at least one of its elements must be <%0%>{footnote"Accomplished constructive mathematicians may noticed that I have made use of Markov's principle in this statement: it's a valid thing to do, though since if something is unprovable from Markov's principle, it is certainly unprovable without. Alternatively, ``must'' in that sentence can be interpreted as the double-negation modality, in which case the statement is constructively true, and leads to a weaker, still non-constructive, version of the limited principle of omniscience."}. If every {omega}-chain had an upper bound, it would give a way to decide whether they contain a <%0%> or not, which is equivalent to the limited principle of omniscience: a known-to-be-non-constructive principle."}
@@ -230,9 +272,158 @@ Circuits are built by composition and taking a trace. Composition of total circu
 What may render the synthetic approach difficult is, beyond the need to use constructive mathematics, is the translation of a synthetic statement into an ordinary one. It is tedious and precise, and, though it probably gets better with training, it is hard to convince oneself no error has been made in the process. This is where a proof assistant would be of great help, and be much more efficient at such a task than a human. There is a prototype for the Coq proof assistant by Jaber, Sozeau \& Tabareau~{cite"Jaber2012"} which handles the special case of presheaves over a preorder. It is sufficient for the topos in this article, so I could have used it to help with the translations of Section~{ref_ s_sequentialcircuits}. Since most of Section~{ref_ s_combinationalcircuits} has already been formalised in Coq{footnote"The formalisation can be found at the following address: {command \"url\" ~packages:[\"hyperref\",\"\"] [T,"https://gist.github.com/aspiwack/628761dab886728bf4db"] T}"}, it is not particularly far-fetched. However, I have unfortunately not taken time to learn how to use this tool.
 
 To conclude, I feel I should say a few words about syntax, after spending this article on the semantics of circuits. When working with circuits we tend to assume that reorganising of wires preservers syntax so that the following two composition of diagonals are equal:
-{displaymath diagram_needed}(* arnaud: co-associativity of diagonals *)
+{displaybox @@ mlpost begin
+  let open Mlpost in
+  let lines ps =
+    let path = Path.pathp ~style:Path.jLine ps in
+    Path.draw path
+  in
+  let line p1 p2 = lines [p1;p2] in
+  let input = Point.origin in
+  let fork1 = input |> Point.shift Point.(scale (Num.mm 5.) right) in
+  let fork1_up = fork1 |> Point.shift Point.(scale (Num.mm 5.) up) in
+  let fork1_down = fork1 |> Point.shift Point.(scale (Num.mm 10.) down) in
+  let fork2 = fork1_up |> Point.shift Point.(scale (Num.mm 5.) right) in
+  let fork2_up = fork2 |> Point.shift Point.(scale (Num.mm 5.) up) in
+  let fork2_down = fork2 |> Point.shift Point.(scale (Num.mm 5.) down) in
+  let output1 = fork2_up |> Point.shift Point.(scale (Num.mm 5.) right) in
+  let output2 = fork2_down |> Point.shift Point.(scale (Num.mm 5.) right) in
+  let output3 = fork1_down |> Point.shift Point.(scale (Num.mm 10.) right) in
+  let lhs_path1 = lines [input;fork1;fork1_up;fork2;fork2_up;output1] in
+  let lhs_path2 = lines [fork1;fork1_down;output3] in
+  let lhs_path3 = lines [fork2;fork2_down;output2] in
+
+  let input' = input in
+  let fork1' = fork1 in
+  let fork1_up' = fork1' |> Point.shift Point.(scale (Num.mm 10.) up) in
+  let fork1_down' = fork1'|> Point.shift Point.(scale (Num.mm 5.) down)  in
+  let fork2' = fork1_down' |> Point.shift Point.(scale (Num.mm 5.) right) in
+  let fork2_up' = fork2_down in
+  let fork2_down' = fork2' |> Point.shift Point.(scale (Num.mm 5.) down) in
+  let rhs_path1 = lines [input';fork1';fork1_up';output1] in
+  let rhs_path2 = lines [fork1';fork1_down';fork2';fork2_down';output3] in
+  let rhs_path3 = lines [fork2';fork2_up';output2] in
+
+  let lhs = Command.seq [
+    lhs_path1;
+    lhs_path2;
+    lhs_path3;
+
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) input; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) fork1; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) fork1_up; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) fork1_down; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) fork2; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) fork2_up; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) fork2_down; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) output1; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) output2; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) output3; *)
+  ] in
+  let rhs0 = Command.seq [
+    rhs_path1;
+    rhs_path2;
+    rhs_path3;
+
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) input'; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) fork1'; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) fork1_up'; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) fork1_down'; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) fork2'; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) fork2_up'; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) fork2_down'; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) output1; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) output2; *)
+    (* Point.draw ~brush:(Brush.t ~scale:(Num.mm 2.) ()) output3; *)
+  ] in
+  let rhs = rhs0 |> Picture.shift Point.(scale (Num.mm 30.) right) in
+  (* let rhs0 = *)
+  (*   let p1 = Point.origin |> Point.shift Point.(scale (Num.mm 5.) up) in *)
+  (*   let p2 = Point.right |> Point.shift Point.(scale (Num.mm 5.) up) in *)
+  (*   let tr = [Transform.reflect p1 p2] in *)
+  (*   lhs |> Picture.transform tr *)
+  (* in *)
+  (* let rhs = rhs0 |> Picture.shift Point.(scale (Num.mm 30.) right) in *)
+  let eqsign =
+    picture_of_latex$=$ |>
+        Picture.scale (Num.of_float 2.) |>
+        Picture.shift Point.(scale (Num.mm 20.) right) |>
+        Picture.shift Point.(scale (Num.mm 1.5) down)
+  in
+  Command.seq [
+    lhs;
+    eqsign;
+    rhs;
+  ] |> Picture.scale (Num.of_float 1.5)
+end}
 But that rearranging gates does not:
 {displaymath diagram_needed}(* arnaud: gate-diagonal neq diagonal<gate,gate*)
+{displaybox @@ mlpost begin
+  let open Mlpost in
+  let lines ps =
+    let path = Path.pathp ~style:Path.jLine ps in
+    Path.draw path
+  in
+  let line p1 p2 = lines [p1;p2] in
+  let f =
+    picture_of_latex (textsf"f") |> Box.pic |> Box.rect ~dx:(Num.mm 2.) ~dy:(Num.mm 1.)
+  in
+  let f_input = Box.west f in
+  let f_output = Box.east f in
+  let input = f_input |> Point.shift Point.(scale (Num.mm 5.) left) in
+  let fork = f_output |> Point.shift Point.(scale (Num.mm 5.) right) in
+  let fork_up = fork |> Point.shift Point.(scale (Num.mm 5.) up) in
+  let fork_down = fork |> Point.shift Point.(scale (Num.mm 5.) down) in
+  let output1 = fork_up |> Point.shift Point.(scale (Num.mm 5.) right) in
+  let output2 = fork_down |> Point.shift Point.(scale (Num.mm 5.) right) in
+  let input_wire = line input f_input in
+  let lhs_path1 = lines[f_output;fork;fork_up;output1] in
+  let lhs_path2 = lines[fork;fork_down;output2] in
+
+  let f1 = f |> Box.shift Point.(scale (Num.mm 5.) up) in
+  let f2 = f |> Box.shift Point.(scale (Num.mm 5.) down) in
+  let f1_input = Box.west f1 in
+  let f1_output = Box.east f1 in
+  let f2_input = Box.west f2 in
+  let f2_output = Box.east f2 in
+  let output1' = f1_output |> Point.shift Point.(scale (Num.mm 5.) right) in
+  let output2' = f2_output |> Point.shift Point.(scale (Num.mm 5.) right) in
+  let output_wire1 = line f1_output output1' in
+  let output_wire2 = line f2_output output2' in
+  let fork_up' = f1_input |> Point.shift Point.(scale (Num.mm 5.) left) in
+  let fork_down' = f2_input |> Point.shift Point.(scale (Num.mm 5.) left) in
+  let fork' = fork_up' |> Point.shift Point.(scale (Num.mm 5.) down) in
+  let input'= fork' |> Point.shift Point.(scale (Num.mm 5.) left) in
+  let rhs_path1 = lines[input';fork';fork_up';f1_input] in
+  let rhs_path2 = lines[fork';fork_down';f2_input] in
+
+  let lhs = Command.seq [
+    Box.draw f;
+    input_wire;
+    lhs_path1;
+    lhs_path2;
+  ] in
+  let rhs0 = Command.seq [
+    Box.draw f1;
+    Box.draw f2;
+    output_wire1;
+    output_wire2;
+    rhs_path1;
+    rhs_path2;
+  ] in
+  let rhs = rhs0 |> Picture.shift Point.(scale (Num.mm 43.) right) in
+  let eqsign =
+    picture_of_latex neq |>
+        Picture.scale (Num.of_float 2.) |>
+        Picture.shift Point.(scale (Num.mm 20.) right) |>
+        Picture.shift Point.(scale (Num.mm 0.5) down)
+  in
+  Command.seq [
+    lhs;
+    eqsign;
+    rhs;
+  ] |> Picture.scale (Num.of_float 1.5)
+end}
 
 It is customary to take syntax to be a free something, and since our semantics is a traced cartesian category, we may be tempted to take the syntax of circuits to be the free traced cartesian category but that would identify both sides in the latter diagram. Instead, the syntax of circuits should be the free construction of some kind of traced categories with diagonals, where diagonals and augmentations (wires to the empty product) have the usual co-associativity and co-neutrality laws, but are not natural transformations."
 
@@ -288,9 +479,9 @@ let _ =
   with e -> Printexc.print_backtrace stdout; raise e
 
   (* arnaud: rafiner les modes plus tard *)
-let _ =
-  Mlpost.Defaults.set_prelude
-      \"axhurkens.tex\"
+(* let _ = *)
+(*   Mlpost.Defaults.set_prelude *)
+(*       \"topocircuit.tex\" *)
 
 let _ =
   Mlpost.Defaults.set_required_files [
