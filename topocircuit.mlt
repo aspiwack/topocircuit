@@ -9,7 +9,7 @@ let codemode = Melt.Verbatim.convert (fun x -> x |> Latex.Verbatim.verbatim |> L
 
 (* let citation_needed = small"[?]" *)
 (* let ref_needed = small"[?]" *)
-let diagram_needed = small"[diagram]"
+(* let diagram_needed = small"[diagram]" *)
 
 (*** labels ***)
 
@@ -357,7 +357,6 @@ To conclude, I feel I should say a few words about syntax, after spending this a
   ] |> Picture.scale (Num.of_float 1.5)
 end}
 But that rearranging gates does not:
-{displaymath diagram_needed}(* arnaud: gate-diagonal neq diagonal<gate,gate*)
 {displaybox @@ mlpost begin
   let open Mlpost in
   let lines ps =
